@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.mercury.swipelayout.ui.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/sl"
+    android:layout_width="match_parent"
+    android:minHeight="60dp"
+    android:layout_height="60dp" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <TextView
+            android:text="call"
+            android:background="#666666"
+            android:textColor="#fff"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_width="60dp"
+            android:layout_height="match_parent" />
+        <TextView
+            android:text="delete"
+            android:background="#f00"
+            android:textColor="#fff"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_width="60dp"
+            android:layout_height="match_parent" />
+    </LinearLayout >
+
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:background="#fff"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <ImageView
+            android:src="@drawable/head_1"
+            android:layout_marginLeft="15dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:text="宋江"
+            android:layout_marginLeft="15dp"
+            android:textSize="22sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout >
+</com.mercury.swipelayout.ui.SwipeLayout >
