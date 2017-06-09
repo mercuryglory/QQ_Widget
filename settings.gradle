@@ -1,1 +1,1 @@
-include ':app', ':swipelayout', ':goolview'
+include ':app', ':swipelayout'
