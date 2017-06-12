@@ -1,4 +1,4 @@
-package com.mercury.parallex;
+package com.demo.widget.parallex;
 
 public class Cheeses {
 

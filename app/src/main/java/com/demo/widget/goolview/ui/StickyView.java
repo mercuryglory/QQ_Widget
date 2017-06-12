@@ -1,4 +1,4 @@
-package com.mercury.goolview.ui;
+package com.demo.widget.goolview.ui;
 
 import android.animation.FloatEvaluator;
 import android.animation.ValueAnimator;
@@ -14,13 +14,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 
-import com.mercury.goolview.util.GeometryUtil;
-import com.mercury.goolview.util.Utils;
+import com.demo.widget.goolview.util.GeometryUtil;
+import com.demo.widget.goolview.util.Utils;
 
 /**
  * Created by Mercury on 2016/8/12.
  */
-public class GooView extends View {
+public class StickyView extends View {
 
     private Paint paint;
     private int statusBarHeight;
@@ -29,15 +29,15 @@ public class GooView extends View {
     private boolean isDisappear=false;       //是否超出范围
     private Paint textPaint;
 
-    public GooView(Context context) {
+    public StickyView(Context context) {
         this(context,null);
     }
 
-    public GooView(Context context, AttributeSet attrs) {
-        this(context, attrs,0);
+    public StickyView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
     }
 
-    public GooView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public StickyView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         paint = new Paint();
         paint.setFlags(Paint.ANTI_ALIAS_FLAG);

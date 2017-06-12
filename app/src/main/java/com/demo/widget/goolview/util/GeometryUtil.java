@@ -1,4 +1,4 @@
-package com.mercury.goolview.util;
+package com.demo.widget.goolview.util;
 
 import android.graphics.PointF;
 

@@ -1,15 +1,15 @@
-package com.mercury.goolview;
+package com.demo.widget.goolview;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.mercury.goolview.ui.GooView;
+import com.demo.widget.goolview.ui.StickyView;
 
-public class MainActivity extends AppCompatActivity {
+public class StickyActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(new GooView(this));
+        setContentView(new StickyView(this));
     }
 }

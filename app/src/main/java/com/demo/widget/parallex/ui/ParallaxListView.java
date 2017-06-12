@@ -1,4 +1,4 @@
-package com.mercury.parallex.ui;
+package com.demo.widget.parallex.ui;
 
 import android.animation.ValueAnimator;
 import android.content.Context;

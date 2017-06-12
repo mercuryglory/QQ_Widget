@@ -1,4 +1,4 @@
-package com.mercury.parallex;
+package com.demo.widget.parallex;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,12 +7,13 @@ import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
-import com.mercury.parallex.ui.ParallaxListView;
+import com.demo.widget.R;
+import com.demo.widget.parallex.ui.ParallaxListView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity {
+public class ParallActivity extends AppCompatActivity {
 
     @Bind(R.id.plv)
     ParallaxListView mPlv;
@@ -20,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_parallex);
         ButterKnife.bind(this);
 
         //添加一个头布局

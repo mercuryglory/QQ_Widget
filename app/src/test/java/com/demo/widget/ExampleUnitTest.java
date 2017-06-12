@@ -1,4 +1,4 @@
-package com.mercury.parallex;
+package com.demo.widget;
 
 import org.junit.Test;
 
