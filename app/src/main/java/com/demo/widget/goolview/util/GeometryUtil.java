@@ -65,8 +65,8 @@ public class GeometryUtil {
 	 */
 	public static PointF[] getIntersectionPoints(PointF pMiddle, float radius, Double lineK) {
 		PointF[] points = new PointF[2];
-		
-		float radian, xOffset = 0, yOffset = 0; 
+
+		float radian, xOffset, yOffset;
 		if(lineK != null){
 			radian= (float) Math.atan(lineK);
 			xOffset = (float) (Math.sin(radian) * radius);

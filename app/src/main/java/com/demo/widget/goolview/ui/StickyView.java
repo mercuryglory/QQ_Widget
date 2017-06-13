@@ -19,14 +19,15 @@ import com.demo.widget.goolview.util.Utils;
 
 /**
  * Created by Mercury on 2016/8/12.
+ * 粘性控件
  */
 public class StickyView extends View {
 
     private Paint paint;
-    private int statusBarHeight;
+    private int statusBarHeight;    //状态栏高度
     private float mTempStickRadius;
     private boolean isOutOfRange=false;       //是否超出范围
-    private boolean isDisappear=false;       //是否超出范围
+    private boolean isDisappear=false;       //控件是否不可见
     private Paint textPaint;
 
     public StickyView(Context context) {
@@ -50,75 +51,79 @@ public class StickyView extends View {
         textPaint.setTypeface(Typeface.DEFAULT_BOLD);
     }
 
-    PointF mDragCenter = new PointF(80f, 80f);          //拖拽圆圆心
-    float mDragRadius = 14f;            //拖拽圆半径
+    PointF mDragCenter = new PointF(150f, 150f);        //拖拽圆圆心初始值（随手势变化）
+    float mDragRadius = 14f;                            //拖拽圆半径
     PointF mStickCenter = new PointF(150f, 150f);       //固定圆圆心
-    float mStickRadius = 10f;           //固定圆半径
+    float mStickRadius = 10f;                           //固定圆半径（随手势变化）
 
-    PointF[] mDragPoints = new PointF[]{        //拖拽圆的两个附着点
+    PointF[] mDragPoints = new PointF[]{        //拖拽圆的两个附着点初始值
             new PointF(50f, 250f),      //点2
             new PointF(50f, 350f)       //点3
     };
 
-    PointF[] mStickPoints = new PointF[]{
+    PointF[] mStickPoints = new PointF[]{       //固定圆的两个附着点初始值
             new PointF(250f, 250f),     //点1
             new PointF(250f, 350f)      //点4
     };
 
     PointF mControlPoint = new PointF(150f, 300f);          //控制点
+    float farestDistance = 80f;     //边界值，控制拖拽圆的拖拽范围
 
     @Override
     protected void onDraw(Canvas canvas) {
-        //计算变量
+        //计算绘制图形所需的变量
         computePoints();
 
-        canvas.save();
+//        canvas.save();
         //向上平移状态栏的高度
         canvas.translate(0, -statusBarHeight);
 
         //绘制内容
         drawContent(canvas);
 
-        canvas.restore();
-        canvas.drawCircle(0,0,5f,paint);
+//        canvas.restore();
+//        canvas.drawCircle(0,0,5f,paint);
 
     }
 
     private void computePoints() {
-        //3,计算固定圆的半径
+        //1,计算固定圆的实时半径
         mTempStickRadius = computeStickRadius();
 
-        //1,一个控制点坐标
+        //2,控制点坐标，为了绘制Path 贝塞尔曲线
         mControlPoint= GeometryUtil.getMiddlePoint(mDragCenter, mStickCenter);
-        //2,四个附着点坐标
+
+        //3,计算四个附着点坐标，为了绘制固定圆和拖拽圆之间的连接部分
         Double lineK = null;
         double yOffset = mStickCenter.y - mDragCenter.y;
         double xOffset = mStickCenter.x - mDragCenter.x;
 
         if (xOffset != 0) {
-
+            //
             lineK = yOffset / xOffset;
         }
-        mDragPoints=GeometryUtil.getIntersectionPoints(mDragCenter, mDragRadius,lineK);
+        mDragPoints = GeometryUtil.getIntersectionPoints(mDragCenter, mDragRadius, lineK);
         mStickPoints = GeometryUtil.getIntersectionPoints(mStickCenter, mTempStickRadius, lineK);
 
 
     }
 
     FloatEvaluator floatEvaluator = new FloatEvaluator();
-    float farestDistance = 80f;
-    //计算临时的固定圆半径
+
+
+    //计算随手势变化的固定圆半径
     private float computeStickRadius() {
-        //距离:0.0->80f
-        //半径:10f->4f
+        //距离:0.0->80f  ——  半径:10f->4f
+        //计算固定圆和拖拽圆圆心之间的距离，最大不超过给定的范围值
         float d = GeometryUtil.getDistanceBetween2Points(mDragCenter, mStickCenter);
         d = Math.min(d, farestDistance);
         float percent = d / farestDistance;
+        //根据距离百分比平滑算出实时的固定圆半径
         return floatEvaluator.evaluate(percent, mStickRadius, mStickRadius * 0.4f);
     }
 
     private void drawContent(Canvas canvas) {
-        //绘制最大范围
+        //绘制最大范围的一个圆，只是为了显示效果更直观，实际使用中不用绘制
         paint.setStyle(Paint.Style.STROKE);
         canvas.drawCircle(mStickCenter.x, mStickCenter.y, farestDistance, paint);
         paint.setStyle(Paint.Style.FILL);
@@ -139,6 +144,7 @@ public class StickyView extends View {
             }
             //绘制拖拽圆
             canvas.drawCircle(mDragCenter.x,mDragCenter.y,mDragRadius,paint);
+            //绘制拖拽圆中的文字
             canvas.drawText("66",mDragCenter.x,mDragCenter.y+mDragRadius/3.0f, textPaint);
         }
 
@@ -160,6 +166,7 @@ public class StickyView extends View {
             case MotionEvent.ACTION_MOVE:
                 x = event.getRawX();
                 y = event.getRawY();
+                //更新拖拽圆圆心的坐标
                 updateDragCenter(x, y);
 
                 float distance = GeometryUtil.getDistanceBetween2Points(mDragCenter, mStickCenter);
