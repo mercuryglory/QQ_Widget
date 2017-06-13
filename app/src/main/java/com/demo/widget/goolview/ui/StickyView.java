@@ -23,12 +23,13 @@ import com.demo.widget.goolview.util.Utils;
  */
 public class StickyView extends View {
 
-    private Paint paint;
+    private Paint paint;        //绘制控件圆形的画笔
     private int statusBarHeight;    //状态栏高度
     private float mTempStickRadius;
     private boolean isOutOfRange=false;       //是否超出范围
     private boolean isDisappear=false;       //控件是否不可见
-    private Paint textPaint;
+    private Paint textPaint;    //绘制文字的画笔
+    private String text = "1";  //控件内显示的文本
 
     public StickyView(Context context) {
         this(context,null);
@@ -56,12 +57,12 @@ public class StickyView extends View {
     PointF mStickCenter = new PointF(150f, 150f);       //固定圆圆心
     float mStickRadius = 10f;                           //固定圆半径（随手势变化）
 
-    PointF[] mDragPoints = new PointF[]{        //拖拽圆的两个附着点初始值
+    PointF[] mDragPoints = new PointF[]{        //拖拽圆的两个切点初始值
             new PointF(50f, 250f),      //点2
             new PointF(50f, 350f)       //点3
     };
 
-    PointF[] mStickPoints = new PointF[]{       //固定圆的两个附着点初始值
+    PointF[] mStickPoints = new PointF[]{       //固定圆的两个切点初始值
             new PointF(250f, 250f),     //点1
             new PointF(250f, 350f)      //点4
     };
@@ -82,7 +83,6 @@ public class StickyView extends View {
         drawContent(canvas);
 
 //        canvas.restore();
-//        canvas.drawCircle(0,0,5f,paint);
 
     }
 
@@ -90,26 +90,26 @@ public class StickyView extends View {
         //1,计算固定圆的实时半径
         mTempStickRadius = computeStickRadius();
 
-        //2,控制点坐标，为了绘制Path 贝塞尔曲线
+        //2,计算控制点坐标，为了绘制Path 贝塞尔曲线
         mControlPoint= GeometryUtil.getMiddlePoint(mDragCenter, mStickCenter);
 
-        //3,计算四个附着点坐标，为了绘制固定圆和拖拽圆之间的连接部分
+        //3,计算四个切点坐标，为了绘制固定圆和拖拽圆之间的连接部分
         Double lineK = null;
         double yOffset = mStickCenter.y - mDragCenter.y;
         double xOffset = mStickCenter.x - mDragCenter.x;
 
         if (xOffset != 0) {
-            //
             lineK = yOffset / xOffset;
         }
+        //得到拖拽圆的两个切点坐标
         mDragPoints = GeometryUtil.getIntersectionPoints(mDragCenter, mDragRadius, lineK);
+        //得到固定圆的两个切点坐标
         mStickPoints = GeometryUtil.getIntersectionPoints(mStickCenter, mTempStickRadius, lineK);
 
 
     }
 
     FloatEvaluator floatEvaluator = new FloatEvaluator();
-
 
     //计算随手势变化的固定圆半径
     private float computeStickRadius() {
@@ -129,26 +129,38 @@ public class StickyView extends View {
         paint.setStyle(Paint.Style.FILL);
 
         if (!isDisappear) {
+            //如果还没有放手并且拖拽圆还在边界范围内
             if (!isOutOfRange) {
 
-                //绘制连接部分
+                //绘制连接部分 贝塞尔曲线
                 Path path = new Path();
                 path.moveTo(mStickPoints[0].x,mStickPoints[0].y);
                 path.quadTo(mControlPoint.x, mControlPoint.y, mDragPoints[0].x, mDragPoints[0].y);
                 path.lineTo(mDragPoints[1].x, mDragPoints[1].y);
                 path.quadTo(mControlPoint.x, mControlPoint.y, mStickPoints[1].x, mStickPoints[1].y);
-                canvas.drawPath(path,paint);
+                canvas.drawPath(path, paint);
 
                 //绘制固定圆
                 canvas.drawCircle(mStickCenter.x,mStickCenter.y,mTempStickRadius,paint);
             }
             //绘制拖拽圆
-            canvas.drawCircle(mDragCenter.x,mDragCenter.y,mDragRadius,paint);
+            canvas.drawCircle(mDragCenter.x, mDragCenter.y, mDragRadius, paint);
             //绘制拖拽圆中的文字
-            canvas.drawText("66",mDragCenter.x,mDragCenter.y+mDragRadius/3.0f, textPaint);
+            canvas.drawText(text,mDragCenter.x,mDragCenter.y+mDragRadius/3.0f, textPaint);
         }
 
+    }
 
+    public void setTextNumber(String textNumber) {
+        text = textNumber;
+    }
+
+    public void backToLayout() {
+        isDisappear = false;
+        isOutOfRange = false;
+        mDragCenter = new PointF(150f, 150f);        //拖拽圆圆心初始值（随手势变化）
+        mStickRadius = 10f;
+        invalidate();
     }
 
     @Override
@@ -157,11 +169,11 @@ public class StickyView extends View {
         float y;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                isDisappear = false;
-                isOutOfRange = false;
-                x = event.getRawX();
-                y = event.getRawY();
-                updateDragCenter(x, y);
+//                isDisappear = false;
+//                isOutOfRange = false;
+//                x = event.getRawX();
+//                y = event.getRawY();
+//                updateDragCenter(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:
                 x = event.getRawX();
