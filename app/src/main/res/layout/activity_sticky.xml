@@ -17,8 +17,8 @@
     <com.demo.widget.goolview.ui.StickyTestView
         android:id="@+id/sticky"
         android:layout_alignParentRight="true"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="45dp"
+        android:layout_height="45dp" />
 
     <Button
         android:layout_alignParentBottom="true"
