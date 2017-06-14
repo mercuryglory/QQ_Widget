@@ -10,6 +10,7 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
@@ -21,27 +22,28 @@ import com.demo.widget.goolview.util.Utils;
  * Created by Mercury on 2016/8/12.
  * 粘性控件
  */
-public class StickyView extends View {
+public class StickyTestView extends View {
 
     private Paint paint;        //绘制控件圆形的画笔
     private int statusBarHeight;    //状态栏高度
     private float mTempStickRadius;
     private boolean isOutOfRange=false;       //是否超出范围
     private boolean isDisappear=false;       //控件是否不可见
+    private boolean drawEnabled = true;
     private Paint textPaint;    //绘制文字的画笔
     private String text = "1";  //控件内显示的文本
 
-    private boolean DEBUG;
+    private boolean DEBUG = true;
 
-    public StickyView(Context context) {
+    public StickyTestView(Context context) {
         this(context,null);
     }
 
-    public StickyView(Context context, AttributeSet attrs) {
+    public StickyTestView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public StickyView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public StickyTestView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         paint = new Paint();
         paint.setFlags(Paint.ANTI_ALIAS_FLAG);
@@ -146,6 +148,7 @@ public class StickyView extends View {
 
                 //绘制固定圆
                 canvas.drawCircle(mStickCenter.x,mStickCenter.y,mTempStickRadius,paint);
+                Log.e("back", mStickCenter.x + "-----" + mStickCenter.y);
             }
             //绘制拖拽圆
             canvas.drawCircle(mDragCenter.x, mDragCenter.y, mDragRadius, paint);
@@ -160,6 +163,7 @@ public class StickyView extends View {
     }
 
     public void backToLayout() {
+        drawEnabled = true;
         isDisappear = false;
         isOutOfRange = false;
         mDragCenter = new PointF(150f, 150f);        //拖拽圆圆心初始值（随手势变化）
@@ -180,6 +184,9 @@ public class StickyView extends View {
 //                updateDragCenter(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:
+                if (!drawEnabled) {
+                    return true;
+                }
                 x = event.getRawX();
                 y = event.getRawY();
                 //更新拖拽圆圆心的坐标
@@ -192,13 +199,20 @@ public class StickyView extends View {
                 }
                 break;
             case MotionEvent.ACTION_UP:
+                //本次不可绘制
+                if (!drawEnabled) {
+                    return true;
+                }
+                //只要在拖拽的过程中拖拽圆超出范围,而不管是不是抬手的时候超出了
                 if (isOutOfRange) {
                     float d = GeometryUtil.getDistanceBetween2Points(mDragCenter, mStickCenter);
                     if (d > farestDistance) {
                         isDisappear = true;
+                        drawEnabled = false;
                         invalidate();
                     } else {
-                        updateDragCenter(mStickCenter.x, mStickCenter.y);
+//                        updateDragCenter(mStickCenter.x, mStickCenter.y);
+                        backToLayout();
                     }
                 } else {
                     final PointF start = new PointF(mDragCenter.x, mDragCenter.y);
