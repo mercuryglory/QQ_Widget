@@ -24,7 +24,7 @@ public class StickyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sticky);
-//        mListView = (ListView) findViewById(R.id.lv);
+        mListView = (ListView) findViewById(R.id.lv);
 //        dataList = new ArrayList<>();
 //        mAdapter = new MyAdapter();
 //        for (int i = 0; i < 10; i++) {

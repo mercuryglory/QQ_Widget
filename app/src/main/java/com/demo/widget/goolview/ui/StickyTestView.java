@@ -10,9 +10,11 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 
 import com.demo.widget.goolview.util.GeometryUtil;
@@ -25,18 +27,23 @@ import com.demo.widget.goolview.util.Utils;
 public class StickyTestView extends View {
 
     private Paint paint;        //绘制控件圆形的画笔
-    private int statusBarHeight;    //状态栏高度
+    private int   statusBarHeight;    //状态栏高度
     private float mTempStickRadius;
-    private boolean isOutOfRange=false;       //是否超出范围
-    private boolean isDisappear=false;       //控件是否不可见
-    private boolean drawEnabled = true;
+    private boolean isOutOfRange = false;       //是否超出范围
+    private boolean isDisappear  = false;       //控件是否不可见
+    private boolean drawEnabled  = true;
     private Paint textPaint;    //绘制文字的画笔
     private String text = "1";  //控件内显示的文本
 
     private boolean DEBUG = true;
 
+    private Context mContext;
+
+    private float viewCenterX;
+    private float viewCenterY;
+
     public StickyTestView(Context context) {
-        this(context,null);
+        this(context, null);
     }
 
     public StickyTestView(Context context, AttributeSet attrs) {
@@ -45,6 +52,7 @@ public class StickyTestView extends View {
 
     public StickyTestView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mContext = context;
         paint = new Paint();
         paint.setFlags(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.RED);
@@ -56,37 +64,31 @@ public class StickyTestView extends View {
         textPaint.setTypeface(Typeface.DEFAULT_BOLD);
     }
 
-    PointF mDragCenter = new PointF(150f, 150f);        //拖拽圆圆心初始值（随手势变化）
-    float mDragRadius = 14f;                            //拖拽圆半径
-    PointF mStickCenter = new PointF(150f, 150f);       //固定圆圆心
-    float mStickRadius = 10f;                           //固定圆半径（随手势变化）
+    PointF mDragCenter;         //拖拽圆圆心初始值（随手势变化）
+    float  mDragRadius  = 14f;                            //拖拽圆半径
+    PointF mStickCenter ;       //固定圆圆心
+    float  mStickRadius = 10f;                           //固定圆半径（随手势变化）
 
-    PointF[] mDragPoints = new PointF[]{        //拖拽圆的两个切点初始值
-            new PointF(50f, 250f),      //点2
-            new PointF(50f, 350f)       //点3
-    };
+    PointF[] mDragPoints;
 
-    PointF[] mStickPoints = new PointF[]{       //固定圆的两个切点初始值
-            new PointF(250f, 250f),     //点1
-            new PointF(250f, 350f)      //点4
-    };
+    PointF[] mStickPoints;
 
-    PointF mControlPoint = new PointF(150f, 300f);          //控制点
-    float farestDistance = 80f;     //边界值，控制拖拽圆的拖拽范围
+    PointF mControlPoint ;          //控制点
+    float  farestDistance = 80f;     //边界值，控制拖拽圆的拖拽范围
 
     @Override
     protected void onDraw(Canvas canvas) {
         //计算绘制图形所需的变量
         computePoints();
 
-//        canvas.save();
+        //        canvas.save();
         //向上平移状态栏的高度
         canvas.translate(0, -statusBarHeight);
 
         //绘制内容
         drawContent(canvas);
 
-//        canvas.restore();
+        //        canvas.restore();
 
     }
 
@@ -95,7 +97,7 @@ public class StickyTestView extends View {
         mTempStickRadius = computeStickRadius();
 
         //2,计算控制点坐标，为了绘制Path 贝塞尔曲线
-        mControlPoint= GeometryUtil.getMiddlePoint(mDragCenter, mStickCenter);
+        mControlPoint = GeometryUtil.getMiddlePoint(mDragCenter, mStickCenter);
 
         //3,计算四个切点坐标，为了绘制固定圆和拖拽圆之间的连接部分
         Double lineK = null;
@@ -140,20 +142,21 @@ public class StickyTestView extends View {
 
                 //绘制连接部分 贝塞尔曲线
                 Path path = new Path();
-                path.moveTo(mStickPoints[0].x,mStickPoints[0].y);
+                path.moveTo(mStickPoints[0].x, mStickPoints[0].y);
                 path.quadTo(mControlPoint.x, mControlPoint.y, mDragPoints[0].x, mDragPoints[0].y);
                 path.lineTo(mDragPoints[1].x, mDragPoints[1].y);
                 path.quadTo(mControlPoint.x, mControlPoint.y, mStickPoints[1].x, mStickPoints[1].y);
                 canvas.drawPath(path, paint);
 
+                Log.e("stickRadius", mTempStickRadius+"");
                 //绘制固定圆
-                canvas.drawCircle(mStickCenter.x,mStickCenter.y,mTempStickRadius,paint);
+                canvas.drawCircle(mStickCenter.x, mStickCenter.y, mTempStickRadius, paint);
                 Log.e("back", mStickCenter.x + "-----" + mStickCenter.y);
             }
             //绘制拖拽圆
             canvas.drawCircle(mDragCenter.x, mDragCenter.y, mDragRadius, paint);
             //绘制拖拽圆中的文字
-            canvas.drawText(text,mDragCenter.x,mDragCenter.y+mDragRadius/3.0f, textPaint);
+            canvas.drawText(text, mDragCenter.x, mDragCenter.y + mDragRadius / 3.0f, textPaint);
         }
 
     }
@@ -166,7 +169,7 @@ public class StickyTestView extends View {
         drawEnabled = true;
         isDisappear = false;
         isOutOfRange = false;
-        mDragCenter = new PointF(150f, 150f);        //拖拽圆圆心初始值（随手势变化）
+        mDragCenter = new PointF(viewCenterX, viewCenterY);        //拖拽圆圆心初始值（随手势变化）
         mStickRadius = 10f;
         invalidate();
     }
@@ -177,11 +180,11 @@ public class StickyTestView extends View {
         float y;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-//                isDisappear = false;
-//                isOutOfRange = false;
-//                x = event.getRawX();
-//                y = event.getRawY();
-//                updateDragCenter(x, y);
+                //                isDisappear = false;
+                //                isOutOfRange = false;
+                //                x = event.getRawX();
+                //                y = event.getRawY();
+                //                updateDragCenter(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (!drawEnabled) {
@@ -211,7 +214,7 @@ public class StickyTestView extends View {
                         drawEnabled = false;
                         invalidate();
                     } else {
-//                        updateDragCenter(mStickCenter.x, mStickCenter.y);
+                        //                        updateDragCenter(mStickCenter.x, mStickCenter.y);
                         backToLayout();
                     }
                 } else {
@@ -221,7 +224,8 @@ public class StickyTestView extends View {
                         @Override
                         public void onAnimationUpdate(ValueAnimator animation) {
                             float fraction = animation.getAnimatedFraction();
-                            PointF p = GeometryUtil.getPointByPercent(start, mStickCenter, fraction);
+                            PointF p = GeometryUtil.getPointByPercent(start, mStickCenter,
+                                    fraction);
                             updateDragCenter(p.x, p.y);
                         }
                     });
@@ -242,8 +246,62 @@ public class StickyTestView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        DisplayMetrics dm = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) mContext.getSystemService(Context
+                .WINDOW_SERVICE);
+        int screenWidth = windowManager.getDefaultDisplay().getWidth();
+        int screenHeight = windowManager.getDefaultDisplay().getHeight();
+        windowManager.getDefaultDisplay().getMetrics(dm);
+        int screenWidth1 = dm.widthPixels;
+        int screenHeight1 = dm.heightPixels;
+
+        int width;
+        int height;
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+        if (widthMode == MeasureSpec.EXACTLY) {
+            width = widthSize;
+        } else {
+            width = 50;
+        }
+        if (heightMode == MeasureSpec.EXACTLY) {
+            height = heightSize;
+        } else {
+            height = 50;
+        }
+        setMeasuredDimension(width, height);
 
         statusBarHeight = Utils.getStatusBarHeight(this);
+        int a = 2;
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        int a = left;
+        int b = top;
+        int c = right;
+        int d = bottom;
+        viewCenterX = (left + right) / 2;
+        viewCenterY = (top + bottom) / 2;
+        mDragCenter  = new PointF(viewCenterX, viewCenterY);        //拖拽圆圆心初始值（随手势变化）
+        mStickCenter = new PointF(viewCenterX, viewCenterY);       //固定圆圆心
+
+        mDragPoints = new PointF[]{        //拖拽圆的两个切点初始值
+                new PointF(viewCenterX, viewCenterY),      //点2
+                new PointF(viewCenterX, viewCenterY)       //点3
+        };
+
+        mStickPoints = new PointF[]{       //固定圆的两个切点初始值
+                new PointF(viewCenterX, viewCenterY),     //点1
+                new PointF(viewCenterX, viewCenterY)      //点4
+        };
+
+        mControlPoint  = new PointF(viewCenterX, viewCenterY);          //控制点
+        boolean s = false;
     }
 }
