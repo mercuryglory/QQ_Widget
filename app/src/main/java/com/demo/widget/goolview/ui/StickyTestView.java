@@ -78,12 +78,16 @@ public class StickyTestView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+
         //计算绘制图形所需的变量
         computePoints();
 
         //        canvas.save();
         //向上平移状态栏的高度
-        canvas.translate(0, -statusBarHeight);
+//        canvas.translate(0, -statusBarHeight);
+        int width = canvas.getWidth();
+        int height = canvas.getHeight();
+        Log.e("canvas", width + "-----" + height);
 
         //绘制内容
         drawContent(canvas);
@@ -180,6 +184,8 @@ public class StickyTestView extends View {
         float y;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                Log.e("down", event.getRawX() + "------" + event.getRawY());
+                Log.e("center", mStickCenter.x + "------" + mStickCenter.y);
                 //                isDisappear = false;
                 //                isOutOfRange = false;
                 //                x = event.getRawX();
@@ -190,8 +196,8 @@ public class StickyTestView extends View {
                 if (!drawEnabled) {
                     return true;
                 }
-                x = event.getRawX();
-                y = event.getRawY();
+                x = event.getX();
+                y = event.getY();
                 //更新拖拽圆圆心的坐标
                 updateDragCenter(x, y);
 
@@ -286,8 +292,9 @@ public class StickyTestView extends View {
         int b = top;
         int c = right;
         int d = bottom;
-        viewCenterX = (left + right) / 2;
-        viewCenterY = (top + bottom) / 2;
+        viewCenterX = (right-left) / 2;
+        viewCenterY = (bottom-top) / 2;
+        Log.e("layout", viewCenterX + "-----" + viewCenterY);
         mDragCenter  = new PointF(viewCenterX, viewCenterY);        //拖拽圆圆心初始值（随手势变化）
         mStickCenter = new PointF(viewCenterX, viewCenterY);       //固定圆圆心
 
