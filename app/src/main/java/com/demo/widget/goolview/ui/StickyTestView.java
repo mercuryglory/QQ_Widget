@@ -2,12 +2,15 @@ package com.demo.widget.goolview.ui;
 
 import android.animation.FloatEvaluator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -16,6 +19,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
+import android.widget.ImageView;
 
 import com.demo.widget.goolview.util.GeometryUtil;
 import com.demo.widget.goolview.util.Utils;
@@ -42,6 +46,10 @@ public class StickyTestView extends View {
     private float viewCenterX;
     private float viewCenterY;
 
+    private WindowManager mWindowManager;
+    private WindowManager.LayoutParams mLayoutParams;
+    private ImageView mImageView;
+
     public StickyTestView(Context context) {
         this(context, null);
     }
@@ -53,6 +61,8 @@ public class StickyTestView extends View {
     public StickyTestView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
+        mWindowManager = ((Activity) context).getWindowManager();
+
         paint = new Paint();
         paint.setFlags(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.RED);
@@ -88,6 +98,16 @@ public class StickyTestView extends View {
         int width = canvas.getWidth();
         int height = canvas.getHeight();
         Log.e("canvas", width + "-----" + height);
+        Rect rect = canvas.getClipBounds();
+//        rect.left = 0;
+//        rect.top = 0;
+//        rect.right = 480;
+//        rect.bottom = 800;
+//        canvas.clipRect(0,0,50,50);
+        Log.e("left", rect.left+"");
+        Log.e("top", rect.top+"");
+        Log.e("right", rect.right+"");
+        Log.e("bottom", rect.bottom+"");
 
         //绘制内容
         drawContent(canvas);
@@ -177,11 +197,11 @@ public class StickyTestView extends View {
         mStickRadius = 10f;
         invalidate();
     }
-
+    float x;
+    float y;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        float x;
-        float y;
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 Log.e("down", event.getRawX() + "------" + event.getRawY());
@@ -191,6 +211,7 @@ public class StickyTestView extends View {
                 //                x = event.getRawX();
                 //                y = event.getRawY();
                 //                updateDragCenter(x, y);
+                addWindow(mContext, event.getRawX(), event.getRawY());
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (!drawEnabled) {
@@ -200,12 +221,18 @@ public class StickyTestView extends View {
                 y = event.getY();
                 //更新拖拽圆圆心的坐标
                 updateDragCenter(x, y);
+                Log.e("event", x + "---" + y);
+                Log.e("eventRaw", event.getRawX() + "---" + event.getRawY());
 
                 float distance = GeometryUtil.getDistanceBetween2Points(mDragCenter, mStickCenter);
                 if (distance > farestDistance) {
                     isOutOfRange = true;
                     invalidate();
                 }
+
+                mLayoutParams.x = (int) (event.getRawX() - x);
+                mLayoutParams.y = (int) (event.getRawY() - y);
+                mWindowManager.updateViewLayout(mImageView, mLayoutParams);
                 break;
             case MotionEvent.ACTION_UP:
                 //本次不可绘制
@@ -219,6 +246,7 @@ public class StickyTestView extends View {
                         isDisappear = true;
                         drawEnabled = false;
                         invalidate();
+                        mWindowManager.removeView(mImageView);
                     } else {
                         //                        updateDragCenter(mStickCenter.x, mStickCenter.y);
                         backToLayout();
@@ -248,6 +276,21 @@ public class StickyTestView extends View {
     private void updateDragCenter(float x, float y) {
         mDragCenter.set(x, y);
         invalidate();
+    }
+
+    public void addWindow(Context context, float downX, float downY) {
+        mLayoutParams = new WindowManager.LayoutParams();
+        mLayoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        mLayoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        mImageView = new ImageView(context);
+        mLayoutParams.x = (int) (downX - x);
+        mLayoutParams.y = (int) (downY - y - statusBarHeight);
+        this.setDrawingCacheEnabled(true);
+        Bitmap tmp = Bitmap.createBitmap(this.getDrawingCache());
+        this.destroyDrawingCache();
+        mImageView.setImageBitmap(tmp);
+        mWindowManager.addView(mImageView, mLayoutParams);
+
     }
 
     @Override

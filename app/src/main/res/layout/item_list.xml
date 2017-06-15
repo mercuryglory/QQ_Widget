@@ -20,8 +20,9 @@
         android:layout_gravity="center_vertical"/>
 
     <com.demo.widget.goolview.ui.StickyView
-        android:layout_width="10dp"
-        android:layout_height="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_gravity="center_vertical"/>
 
 </LinearLayout >

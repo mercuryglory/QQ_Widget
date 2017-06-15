@@ -18,7 +18,8 @@
         android:id="@+id/sticky"
         android:layout_alignParentRight="true"
         android:layout_width="45dp"
-        android:layout_height="45dp" />
+        android:layout_height="45dp"
+        android:visibility="visible"/>
 
     <Button
         android:layout_alignParentBottom="true"
