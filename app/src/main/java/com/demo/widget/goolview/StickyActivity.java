@@ -66,16 +66,19 @@ public class StickyActivity extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
 
             final ViewHolder holder;
-            if (convertView == null) {
-                convertView = View.inflate(parent.getContext(), R.layout.item_list, null);
-                holder = new ViewHolder();
-                holder.mTextView = (TextView) convertView.findViewById(R.id.tv_number);
-                holder.mTextGooView = (TextGooView) convertView.findViewById(R.id.gootext);
-                convertView.setTag(holder);
-
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
+            convertView = View.inflate(parent.getContext(), R.layout.item_list, null);
+            holder = new ViewHolder();
+            holder.mTextGooView = (TextGooView) convertView.findViewById(R.id.gootext);
+//            if (convertView == null) {
+//                convertView = View.inflate(parent.getContext(), R.layout.item_list, null);
+//                holder = new ViewHolder();
+//                holder.mTextView = (TextView) convertView.findViewById(R.id.tv_number);
+//                holder.mTextGooView = (TextGooView) convertView.findViewById(R.id.gootext);
+//                convertView.setTag(holder);
+//
+//            } else {
+//                holder = (ViewHolder) convertView.getTag();
+//            }
 
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
