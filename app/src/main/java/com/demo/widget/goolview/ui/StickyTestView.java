@@ -2,13 +2,12 @@ package com.demo.widget.goolview.ui;
 
 import android.animation.FloatEvaluator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -17,9 +16,9 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
-import android.widget.ImageView;
 
 import com.demo.widget.goolview.util.GeometryUtil;
 import com.demo.widget.goolview.util.Utils;
@@ -27,6 +26,7 @@ import com.demo.widget.goolview.util.Utils;
 /**
  * Created by Mercury on 2016/8/12.
  * 粘性控件
+ * 真正可以拖动显示效果的，应该是全局的
  */
 public class StickyTestView extends View {
 
@@ -39,16 +39,45 @@ public class StickyTestView extends View {
     private Paint textPaint;    //绘制文字的画笔
     private String text = "1";  //控件内显示的文本
 
-    private boolean DEBUG = true;
+    private boolean DEBUG = false;
 
     private Context mContext;
 
     private float viewCenterX;
     private float viewCenterY;
 
-    private WindowManager mWindowManager;
+    private WindowManager              mWindowManager;
     private WindowManager.LayoutParams mLayoutParams;
-    private ImageView mImageView;
+    private ViewGroup.LayoutParams     mParams;
+    private boolean isFirst = true;
+    private TextGooView mTextGooView;
+
+    private float centerX;
+    private float centerY;
+
+    public void setLayout(TextGooView textGooView) {
+        mTextGooView = textGooView;
+        int[] points = new int[2];
+        mTextGooView.getLocationInWindow(points);
+        centerX = points[0] + mTextGooView.getWidth() / 2;
+        centerY= points[1] + mTextGooView.getHeight() / 2;
+        Log.e("mercurytest", centerX + "-----" + centerY);
+
+        mDragCenter  = new PointF(centerX, centerY);        //拖拽圆圆心初始值（随手势变化）
+        mStickCenter = new PointF(centerX, centerY);       //固定圆圆心
+
+        mDragPoints = new PointF[]{        //拖拽圆的两个切点初始值
+                new PointF(centerX, centerY),      //点2
+                new PointF(centerX, centerY)       //点3
+        };
+
+        mStickPoints = new PointF[]{       //固定圆的两个切点初始值
+                new PointF(centerX, centerY),     //点1
+                new PointF(centerX, centerY)      //点4
+        };
+
+        mControlPoint  = new PointF(centerX, centerY);
+    }
 
     public StickyTestView(Context context) {
         this(context, null);
@@ -61,7 +90,9 @@ public class StickyTestView extends View {
     public StickyTestView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
-        mWindowManager = ((Activity) context).getWindowManager();
+        mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        mLayoutParams = new WindowManager.LayoutParams();
+        mLayoutParams.format = PixelFormat.TRANSLUCENT;
 
         paint = new Paint();
         paint.setFlags(Paint.ANTI_ALIAS_FLAG);
@@ -72,11 +103,13 @@ public class StickyTestView extends View {
         textPaint.setTextSize(15f);
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+
+
     }
 
     PointF mDragCenter;         //拖拽圆圆心初始值（随手势变化）
     float  mDragRadius  = 14f;                            //拖拽圆半径
-    PointF mStickCenter ;       //固定圆圆心
+    PointF mStickCenter;        //固定圆圆心
     float  mStickRadius = 10f;                           //固定圆半径（随手势变化）
 
     PointF[] mDragPoints;
@@ -197,11 +230,12 @@ public class StickyTestView extends View {
         mStickRadius = 10f;
         invalidate();
     }
+
     float x;
     float y;
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 Log.e("down", event.getRawX() + "------" + event.getRawY());
@@ -211,14 +245,20 @@ public class StickyTestView extends View {
                 //                x = event.getRawX();
                 //                y = event.getRawY();
                 //                updateDragCenter(x, y);
-                addWindow(mContext, event.getRawX(), event.getRawY());
+
+                if (getParent() != null) {
+                    mWindowManager.removeView(this);
+                    Log.e("points_layout", this.getWidth() + "-----" + this.getHeight());
+                }
+                mWindowManager.addView(this, mLayoutParams);
+
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (!drawEnabled) {
                     return true;
                 }
-                x = event.getX();
-                y = event.getY();
+                x = event.getRawX();
+                y = event.getRawY() - statusBarHeight;
                 //更新拖拽圆圆心的坐标
                 updateDragCenter(x, y);
                 Log.e("event", x + "---" + y);
@@ -230,11 +270,12 @@ public class StickyTestView extends View {
                     invalidate();
                 }
 
-                mLayoutParams.x = (int) (event.getRawX() - x);
-                mLayoutParams.y = (int) (event.getRawY() - y);
-                mWindowManager.updateViewLayout(mImageView, mLayoutParams);
+//                mLayoutParams.x = (int) (event.getRawX() - x);
+//                mLayoutParams.y = (int) (event.getRawY() - y);
+//                mWindowManager.updateViewLayout(mImageView, mLayoutParams);
                 break;
             case MotionEvent.ACTION_UP:
+                Log.e("up", mDragCenter.x + "");
                 //本次不可绘制
                 if (!drawEnabled) {
                     return true;
@@ -246,7 +287,6 @@ public class StickyTestView extends View {
                         isDisappear = true;
                         drawEnabled = false;
                         invalidate();
-                        mWindowManager.removeView(mImageView);
                     } else {
                         //                        updateDragCenter(mStickCenter.x, mStickCenter.y);
                         backToLayout();
@@ -267,6 +307,9 @@ public class StickyTestView extends View {
                     animator.setDuration(500);
                     animator.start();
                 }
+                if (getParent() != null) {
+                    mWindowManager.removeView(this);
+                }
                 break;
 
         }
@@ -278,20 +321,6 @@ public class StickyTestView extends View {
         invalidate();
     }
 
-    public void addWindow(Context context, float downX, float downY) {
-        mLayoutParams = new WindowManager.LayoutParams();
-        mLayoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
-        mLayoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        mImageView = new ImageView(context);
-        mLayoutParams.x = (int) (downX - x);
-        mLayoutParams.y = (int) (downY - y - statusBarHeight);
-        this.setDrawingCacheEnabled(true);
-        Bitmap tmp = Bitmap.createBitmap(this.getDrawingCache());
-        this.destroyDrawingCache();
-        mImageView.setImageBitmap(tmp);
-        mWindowManager.addView(mImageView, mLayoutParams);
-
-    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -337,7 +366,7 @@ public class StickyTestView extends View {
         int d = bottom;
         viewCenterX = (right-left) / 2;
         viewCenterY = (bottom-top) / 2;
-        Log.e("layout", viewCenterX + "-----" + viewCenterY);
+        Log.e("onLayout", viewCenterX + "-----" + viewCenterY);
         mDragCenter  = new PointF(viewCenterX, viewCenterY);        //拖拽圆圆心初始值（随手势变化）
         mStickCenter = new PointF(viewCenterX, viewCenterY);       //固定圆圆心
 
@@ -353,5 +382,16 @@ public class StickyTestView extends View {
 
         mControlPoint  = new PointF(viewCenterX, viewCenterY);          //控制点
         boolean s = false;
+
+
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        if (isFirst) {
+            mParams = getLayoutParams();
+            isFirst = false;
+        }
     }
 }

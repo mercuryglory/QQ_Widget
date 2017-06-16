@@ -10,16 +10,16 @@
         android:id="@+id/lv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone">
+        android:visibility="visible">
 
     </ListView >
 
-    <com.demo.widget.goolview.ui.StickyTestView
+    <!--<com.demo.widget.goolview.ui.StickyTestView
         android:id="@+id/sticky"
         android:layout_alignParentRight="true"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:visibility="visible"/>
+        android:visibility="gone"/>-->
 
     <Button
         android:layout_alignParentBottom="true"
@@ -27,5 +27,6 @@
         android:onClick="restore"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 </RelativeLayout >
