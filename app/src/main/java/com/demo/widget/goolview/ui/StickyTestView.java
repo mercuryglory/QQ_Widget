@@ -222,10 +222,10 @@ public class StickyTestView extends View {
     }
 
     public void backToLayout() {
-        drawEnabled = true;
-        isDisappear = false;
-        isOutOfRange = false;
-        mDragCenter = new PointF(viewCenterX, viewCenterY);        //拖拽圆圆心初始值（随手势变化）
+//        drawEnabled = true;
+//        isDisappear = false;
+//        isOutOfRange = false;
+        mDragCenter = new PointF(centerX, centerY);        //拖拽圆圆心初始值（随手势变化）
         mStickRadius = 10f;
         invalidate();
     }
@@ -235,6 +235,10 @@ public class StickyTestView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (isOutOfRange && isDisappear) {
+            Log.e("absolute", "彻底消失");
+            return true;
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
 
@@ -251,9 +255,9 @@ public class StickyTestView extends View {
 
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (!drawEnabled) {
-                    return true;
-                }
+//                if (!drawEnabled) {
+//                    return true;
+//                }
                 x = event.getRawX();
                 y = event.getRawY();
                 //更新拖拽圆圆心的坐标
@@ -270,17 +274,30 @@ public class StickyTestView extends View {
             case MotionEvent.ACTION_UP:
                 Log.e("parent_up", mDragCenter.x + "-----" + mDragCenter.y);
                 //本次不可绘制
-                if (!drawEnabled) {
-                    return true;
-                }
+//                if (!drawEnabled) {
+//                    return true;
+//                }
                 //只要在拖拽的过程中拖拽圆超出范围,而不管是不是抬手的时候超出了
+
                 if (isOutOfRange) {
                     float d = GeometryUtil.getDistanceBetween2Points(mDragCenter, mStickCenter);
                     if (d > farestDistance) {
+                        Log.e("status", "真的超出了");
                         isDisappear = true;
                         drawEnabled = false;
-                        invalidate();
+                        if (getParent() != null) {
+                            mWindowManager.removeViewImmediate(this);
+                        }
+                        mTextGooView.setStatus(TextGooView.Status.DISAPPEAR);
+//                        invalidate();
                     } else {
+                        Log.e("status", "还好回去了");
+                        isOutOfRange = false;
+                        mTextGooView.setStatus(TextGooView.Status.NORMAL);
+                        if (getParent() != null) {
+                            mWindowManager.removeViewImmediate(this);
+                        }
+
                         //                        updateDragCenter(mStickCenter.x, mStickCenter.y);
                         backToLayout();
                     }
@@ -299,11 +316,14 @@ public class StickyTestView extends View {
                     animator.setInterpolator(new OvershootInterpolator(2));
                     animator.setDuration(500);
                     animator.start();
+                    Log.e("status", "根本就没有超出");
+//                    if (getParent() != null) {
+//                        mWindowManager.removeViewImmediate(this);
+//                    }
+                    isOutOfRange = false;
+                    mTextGooView.setStatus(TextGooView.Status.NORMAL);
                 }
-                if (getParent() != null) {
-                    mWindowManager.removeViewImmediate(this);
-                }
-                mTextGooView.setStatus(TextGooView.Status.NORMAL);
+
                 break;
 
         }
