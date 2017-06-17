@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -26,6 +25,8 @@ public class TextGooView extends TextView {
     float centerY;
     float radius;
 
+    private Context mContext;
+
     public TextGooView(Context context) {
         this(context, null);
     }
@@ -36,6 +37,7 @@ public class TextGooView extends TextView {
 
     public TextGooView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mContext = context;
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.RED);
 
@@ -84,9 +86,18 @@ public class TextGooView extends TextView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        getParent().requestDisallowInterceptTouchEvent(true);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                getParent().requestDisallowInterceptTouchEvent(true);
+                stickyTestView = new StickyTestView(mContext);
+                stickyTestView.setLayout(TextGooView.this);
+//                this.setMeasureListener(new MeasureListener() {
+//                    @Override
+//                    public void create(float centerX, float centerY) {
+//
+//                    }
+//                });
+
                 Log.e("mercury", "down");
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -104,6 +115,10 @@ public class TextGooView extends TextView {
         return true;
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        return super.dispatchTouchEvent(event);
+    }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -135,7 +150,6 @@ public class TextGooView extends TextView {
 
     public StickyTestView createView(Context context) {
         stickyTestView = new StickyTestView(context);
-        getWindowVisibleDisplayFrame(new Rect());
         return stickyTestView;
     }
 

@@ -243,17 +243,14 @@ public class StickyTestView extends View {
 
                 Log.e("down", event.getRawX() + "------" + event.getRawY());
                 Log.e("center", mStickCenter.x + "------" + mStickCenter.y);
-                //                isDisappear = false;
-                //                isOutOfRange = false;
-                //                x = event.getRawX();
-                //                y = event.getRawY();
-                //                updateDragCenter(x, y);
+                Log.e("window", mWindowManager.hashCode()+"");
 
                 if (getParent() != null) {
-                    mWindowManager.removeView(this);
-                    Log.e("points_layout", this.getWidth() + "-----" + this.getHeight());
+//                    mWindowManager.removeView(this);
+                    Log.e("parent_down", this.getWidth() + "-----" + this.getHeight());
                 }
-                mWindowManager.addView(this, mLayoutParams);
+                mWindowManager.addView(StickyTestView.this, mLayoutParams);
+
                 mTextGooView.setStatus(TextGooView.Status.DISAPPEAR);
 
                 break;
@@ -275,7 +272,7 @@ public class StickyTestView extends View {
 
                 break;
             case MotionEvent.ACTION_UP:
-                Log.e("up", mDragCenter.x + "");
+                Log.e("parent_up", mDragCenter.x + "-----" + mDragCenter.y);
                 //本次不可绘制
                 if (!drawEnabled) {
                     return true;
@@ -308,7 +305,7 @@ public class StickyTestView extends View {
                     animator.start();
                 }
                 if (getParent() != null) {
-                    mWindowManager.removeView(this);
+                    mWindowManager.removeViewImmediate(this);
                 }
                 mTextGooView.setStatus(TextGooView.Status.NORMAL);
                 break;
@@ -395,4 +392,6 @@ public class StickyTestView extends View {
             isFirst = false;
         }
     }
+
 }
+
