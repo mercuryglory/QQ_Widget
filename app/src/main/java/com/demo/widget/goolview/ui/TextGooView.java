@@ -89,15 +89,10 @@ public class TextGooView extends TextView {
         getParent().requestDisallowInterceptTouchEvent(true);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                stickyTestView = new StickyTestView(mContext);
+//                stickyTestView = new StickyTestView(mContext);
+//                stickyTestView.setLayout(TextGooView.this);
+                //更新粘性控件将要绘制的位置
                 stickyTestView.setLayout(TextGooView.this);
-//                this.setMeasureListener(new MeasureListener() {
-//                    @Override
-//                    public void create(float centerX, float centerY) {
-//
-//                    }
-//                });
-
                 Log.e("mercury", "down");
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -125,10 +120,10 @@ public class TextGooView extends TextView {
         super.onSizeChanged(w, h, oldw, oldh);
         int[] points = new int[2];
         this.getLocationInWindow(points);
-        radius = this.getWidth() / 2;
+        radius                                   = this.getWidth() / 2;
         int x = points[0] + this.getWidth() / 2;
         int y = points[1] + this.getHeight() / 2;
-        Log.e("mercury", points[0] + "-----" + points[1] + "-----" + this.getWidth() + "-----" +
+        Log.e("mercuryonsize", points[0] + "-----" + points[1] + "-----" + this.getWidth() + "-----" +
                 this.getHeight());
         if (mlistener != null) {
             mlistener.create(x, y);

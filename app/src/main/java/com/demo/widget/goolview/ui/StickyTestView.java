@@ -16,7 +16,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 
@@ -48,8 +47,6 @@ public class StickyTestView extends View {
 
     private WindowManager              mWindowManager;
     private WindowManager.LayoutParams mLayoutParams;
-    private ViewGroup.LayoutParams     mParams;
-    private boolean isFirst = true;
     private TextGooView mTextGooView;
 
     private float centerX;
@@ -243,10 +240,9 @@ public class StickyTestView extends View {
 
                 Log.e("down", event.getRawX() + "------" + event.getRawY());
                 Log.e("center", mStickCenter.x + "------" + mStickCenter.y);
-                Log.e("window", mWindowManager.hashCode()+"");
 
                 if (getParent() != null) {
-//                    mWindowManager.removeView(this);
+//                    mWindowManager.removeViewImmediate(this);
                     Log.e("parent_down", this.getWidth() + "-----" + this.getHeight());
                 }
                 mWindowManager.addView(StickyTestView.this, mLayoutParams);
@@ -262,7 +258,7 @@ public class StickyTestView extends View {
                 y = event.getRawY();
                 //更新拖拽圆圆心的坐标
                 updateDragCenter(x, y);
-                Log.e("center", mStickCenter.x + "------" + mStickCenter.y);
+                Log.e("moveCenter", mStickCenter.x + "------" + mStickCenter.y);
 
                 float distance = GeometryUtil.getDistanceBetween2Points(mDragCenter, mStickCenter);
                 if (distance > farestDistance) {
@@ -352,7 +348,6 @@ public class StickyTestView extends View {
         setMeasuredDimension(width, height);
 
         statusBarHeight = Utils.getStatusBarHeight(this);
-        int a = 2;
     }
 
     @Override
@@ -384,14 +379,6 @@ public class StickyTestView extends View {
 
     }
 
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        if (isFirst) {
-            mParams = getLayoutParams();
-            isFirst = false;
-        }
-    }
 
 }
 
