@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -43,7 +44,7 @@ public class PlaceView extends TextView {
 
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setColor(Color.WHITE);
-        textPaint.setTextSize(15);
+        textPaint.setTextSize(15f);
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
@@ -63,6 +64,7 @@ public class PlaceView extends TextView {
 //                this.setBackgroundResource(R.drawable.red_bg);
                 paint.setColor(Color.RED);
                 textPaint.setColor(Color.WHITE);
+                Log.e("placeview", radius + "");
                 canvas.drawCircle(centerX, centerY, radius, paint);
                 canvas.drawText("1", centerX, centerY + radius / 3, textPaint);
                 break;
@@ -89,9 +91,7 @@ public class PlaceView extends TextView {
         getParent().requestDisallowInterceptTouchEvent(true);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-//                stickyTestView = new StickyTestView(mContext);
-//                stickyTestView.setLayout(TextGooView.this);
-                //更新粘性控件将要绘制的位置
+                //将自身的位置参数传递给粘性控件
                 stickyTestView.setLayout(PlaceView.this);
                 Log.e("mercury", "down");
                 break;
@@ -118,30 +118,10 @@ public class PlaceView extends TextView {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        int[] points = new int[2];
-        this.getLocationInWindow(points);
-        radius                                   = this.getWidth() / 2;
-        int x = points[0] + this.getWidth() / 2;
-        int y = points[1] + this.getHeight() / 2;
-        Log.e("mercuryonsize", points[0] + "-----" + points[1] + "-----" + this.getWidth() + "-----" +
-                this.getHeight());
-        if (mlistener != null) {
-            mlistener.create(x, y);
-        }
-    }
-
-    MeasureListener mlistener;
-
-    public interface MeasureListener {
-
-        void create(float centerX, float centerY);
+        radius = this.getWidth() / 2;
+        int a = 2;
 
     }
-
-    public void setMeasureListener(MeasureListener listener) {
-        mlistener = listener;
-    }
-
 
     public StickyView createView(Context context) {
         stickyTestView = new StickyView(context);
@@ -150,7 +130,27 @@ public class PlaceView extends TextView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int width;
+        int height;
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+        Rect bounds = new Rect();
+        if (widthMode == MeasureSpec.EXACTLY) {
+            width = widthSize;
+        } else {
+            textPaint.getTextBounds(this.getText().toString(), 0, this.getText().length(), bounds);
+            width = bounds.width() + 20 + getPaddingLeft() + getPaddingRight();
+        }
+        if (heightMode == MeasureSpec.EXACTLY) {
+            height = heightSize;
+        } else {
+            textPaint.getTextBounds(this.getText().toString(), 0, this.getText().length(), bounds);
+            height = bounds.width() + 20 + getPaddingTop() + getPaddingBottom();
+        }
+        Log.e("measure", width + "-----" + height);
+        setMeasuredDimension(width, height);
     }
 
     @Override

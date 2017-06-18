@@ -10,7 +10,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.demo.widget.R;
-import com.demo.widget.goolview.ui.StickyView;
 import com.demo.widget.goolview.ui.PlaceView;
 
 import java.util.ArrayList;
@@ -89,13 +88,7 @@ public class StickyActivity extends AppCompatActivity {
             }, 100);
 
             final PlaceView gooView = holder.mTextGooView;
-            final StickyView view = gooView.createView(StickyActivity.this);
-//            gooView.setMeasureListener(new TextGooView.MeasureListener() {
-//                @Override
-//                public void create(float centerX, float centerY) {
-//                    view.setLayout(gooView);
-//                }
-//            });
+            gooView.createView(StickyActivity.this);
 
             String text = dataList.get(position);
 //            holder.mTextView.setText(text);

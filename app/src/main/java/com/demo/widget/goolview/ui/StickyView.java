@@ -3,7 +3,6 @@ package com.demo.widget.goolview.ui;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.FloatEvaluator;
-import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -14,6 +13,7 @@ import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -37,7 +37,6 @@ public class StickyView extends View {
     private float mTempStickRadius;
     private boolean isOutOfRange = false;       //是否超出范围
     private boolean isDisappear  = false;       //控件是否不可见
-    private boolean drawEnabled  = true;
     private Paint textPaint;    //绘制文字的画笔
     private String text = "1";  //控件内显示的文本
 
@@ -52,10 +51,13 @@ public class StickyView extends View {
     private float centerX;
     private float centerY;
 
+    private Handler handler = new Handler();
+
     public void setLayout(PlaceView textGooView) {
         mTextGooView = textGooView;
         int[] points = new int[2];
         mTextGooView.getLocationInWindow(points);
+        //根据占位红点的位置得到自身应该绘制的位置
         centerX = points[0] + mTextGooView.getWidth() / 2;
         centerY= points[1] + mTextGooView.getHeight() / 2;
         Log.e("mercurytest", centerX + "-----" + centerY);
@@ -75,6 +77,7 @@ public class StickyView extends View {
 
         mControlPoint  = new PointF(centerX, centerY);
         mDragRadius = mTextGooView.getWidth() / 2;
+        mStickRadius = mTextGooView.getWidth() / 2;
     }
 
 
@@ -109,7 +112,7 @@ public class StickyView extends View {
     PointF mDragCenter;         //拖拽圆圆心初始值（随手势变化）
     float  mDragRadius;                            //拖拽圆半径
     PointF mStickCenter;        //固定圆圆心
-    float  mStickRadius = 10f;                           //固定圆半径（随手势变化）
+    float  mStickRadius;                           //固定圆半径（随手势变化）
 
     PointF[] mDragPoints;
 
@@ -221,11 +224,10 @@ public class StickyView extends View {
     }
 
     public void backToLayout() {
-//        drawEnabled = true;
 //        isDisappear = false;
         isOutOfRange = false;
         mDragCenter = new PointF(centerX, centerY);        //拖拽圆圆心初始值（随手势变化）
-        mStickRadius = 10f;
+//        mStickRadius = 10f;
         invalidate();
         mTextGooView.setStatus(PlaceView.Status.NORMAL);
     }
@@ -236,28 +238,21 @@ public class StickyView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (isOutOfRange && isDisappear) {
-            Log.e("absolute", "彻底消失");
+            Log.e("status", "彻底消失");
             return true;
         }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
 
                 Log.e("down", event.getRawX() + "------" + event.getRawY());
-                Log.e("center", mStickCenter.x + "------" + mStickCenter.y);
-
-                if (getParent() != null) {
-//                    mWindowManager.removeViewImmediate(this);
-                    Log.e("parent_down", this.getWidth() + "-----" + this.getHeight());
-                }
+                Log.e("stickview", mStickRadius + "");
+                //按下的时候将该控件添加到悬浮窗口，并且占位的红点应该消失
+                removePoint();
                 mWindowManager.addView(StickyView.this, mLayoutParams);
-
-                mTextGooView.setStatus(PlaceView.Status.DISAPPEAR);
+                        mTextGooView.setStatus(PlaceView.Status.DISAPPEAR);
 
                 break;
             case MotionEvent.ACTION_MOVE:
-//                if (!drawEnabled) {
-//                    return true;
-//                }
                 x = event.getRawX();
                 y = event.getRawY();
                 //更新拖拽圆圆心的坐标
@@ -273,18 +268,13 @@ public class StickyView extends View {
                 break;
             case MotionEvent.ACTION_UP:
                 Log.e("parent_up", mDragCenter.x + "-----" + mDragCenter.y);
-                //本次不可绘制
-//                if (!drawEnabled) {
-//                    return true;
-//                }
-                //只要在拖拽的过程中拖拽圆超出范围,而不管是不是抬手的时候超出了
 
+                //只要在拖拽的过程中拖拽圆超出范围,而不管是不是抬手的时候超出了
                 if (isOutOfRange) {
                     float d = GeometryUtil.getDistanceBetween2Points(mDragCenter, mStickCenter);
                     if (d > farestDistance) {
                         Log.e("status", "真的超出了");
                         isDisappear = true;
-                        drawEnabled = false;
                         mTextGooView.setStatus(PlaceView.Status.DISAPPEAR);
                         removePoint();
                     } else {
@@ -313,9 +303,9 @@ public class StickyView extends View {
                     animator.addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            removePoint();
                             isOutOfRange = false;
                             mTextGooView.setStatus(PlaceView.Status.NORMAL);
+                            removePoint();
                         }
                     });
                     //默认动画时长就是300ms
@@ -324,7 +314,6 @@ public class StickyView extends View {
                     Log.e("status", "根本就没有超出");
 
                 }
-
 
                 break;
 
@@ -341,12 +330,12 @@ public class StickyView extends View {
         if (getParent() != null) {
             mWindowManager.removeViewImmediate(StickyView.this);
         }
+
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         DisplayMetrics dm = new DisplayMetrics();
         WindowManager windowManager = (WindowManager) mContext.getSystemService(Context
                 .WINDOW_SERVICE);
@@ -356,33 +345,9 @@ public class StickyView extends View {
         int screenWidth1 = dm.widthPixels;
         int screenHeight1 = dm.heightPixels;
 
-        int width;
-        int height;
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-        if (widthMode == MeasureSpec.EXACTLY) {
-            width = widthSize;
-        } else {
-            width = 50;
-        }
-        if (heightMode == MeasureSpec.EXACTLY) {
-            height = heightSize;
-        } else {
-            height = 50;
-        }
-        setMeasuredDimension(width, height);
-
         statusBarHeight = Utils.getStatusBarHeight(this);
     }
 
-    public class MyInter implements TimeInterpolator {
-        @Override
-        public float getInterpolation(float input) {
-            return 0;
-        }
-    }
 
 }
 

@@ -20,7 +20,7 @@ import com.demo.widget.goolview.util.Utils;
 
 /**
  * Created by Mercury on 2016/8/12.
- * 粘性控件
+ * 最初的粘性控件，也就是圆心固定在屏幕的某个部分，无法应用到列表中使用
  */
 public class StickyTestView extends View {
 
