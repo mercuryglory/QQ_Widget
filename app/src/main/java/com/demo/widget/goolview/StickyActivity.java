@@ -10,8 +10,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.demo.widget.R;
-import com.demo.widget.goolview.ui.StickyTestView;
-import com.demo.widget.goolview.ui.TextGooView;
+import com.demo.widget.goolview.ui.StickyView;
+import com.demo.widget.goolview.ui.PlaceView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +68,7 @@ public class StickyActivity extends AppCompatActivity {
             final ViewHolder holder;
             convertView = View.inflate(parent.getContext(), R.layout.item_list, null);
             holder = new ViewHolder();
-            holder.mTextGooView = (TextGooView) convertView.findViewById(R.id.gootext);
+            holder.mTextGooView = (PlaceView) convertView.findViewById(R.id.gootext);
 //            if (convertView == null) {
 //                convertView = View.inflate(parent.getContext(), R.layout.item_list, null);
 //                holder = new ViewHolder();
@@ -88,8 +88,8 @@ public class StickyActivity extends AppCompatActivity {
                 }
             }, 100);
 
-            final TextGooView gooView = holder.mTextGooView;
-            final StickyTestView view = gooView.createView(StickyActivity.this);
+            final PlaceView gooView = holder.mTextGooView;
+            final StickyView view = gooView.createView(StickyActivity.this);
 //            gooView.setMeasureListener(new TextGooView.MeasureListener() {
 //                @Override
 //                public void create(float centerX, float centerY) {
@@ -105,8 +105,8 @@ public class StickyActivity extends AppCompatActivity {
 
 
         class ViewHolder {
-            TextView mTextView;
-            TextGooView mTextGooView;
+            TextView  mTextView;
+            PlaceView mTextGooView;
         }
     }
 

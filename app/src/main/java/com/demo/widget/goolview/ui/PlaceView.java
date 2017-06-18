@@ -13,11 +13,11 @@ import android.widget.TextView;
 /**
  * 创建者:    wang.zhonghao
  * 创建时间:  2017/6/16
- * 描述:      ${TODO}
+ * 描述:      固定的红点 在布局中使用，起占位的作用
  */
-public class TextGooView extends TextView {
+public class PlaceView extends TextView {
 
-    private StickyTestView stickyTestView;
+    private StickyView stickyTestView;
     Paint paint;
     Paint textPaint;
 
@@ -27,15 +27,15 @@ public class TextGooView extends TextView {
 
     private Context mContext;
 
-    public TextGooView(Context context) {
+    public PlaceView(Context context) {
         this(context, null);
     }
 
-    public TextGooView(Context context, AttributeSet attrs) {
+    public PlaceView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public TextGooView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PlaceView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -92,7 +92,7 @@ public class TextGooView extends TextView {
 //                stickyTestView = new StickyTestView(mContext);
 //                stickyTestView.setLayout(TextGooView.this);
                 //更新粘性控件将要绘制的位置
-                stickyTestView.setLayout(TextGooView.this);
+                stickyTestView.setLayout(PlaceView.this);
                 Log.e("mercury", "down");
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -143,8 +143,8 @@ public class TextGooView extends TextView {
     }
 
 
-    public StickyTestView createView(Context context) {
-        stickyTestView = new StickyTestView(context);
+    public StickyView createView(Context context) {
+        stickyTestView = new StickyView(context);
         return stickyTestView;
     }
 
