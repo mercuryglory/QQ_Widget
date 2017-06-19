@@ -32,7 +32,7 @@ import com.demo.widget.goolview.util.Utils;
 /**
  * Created by Mercury on 2016/8/12.
  * 粘性控件
- * 真正可以拖动显示效果的，应该是全局的
+ * 真正可以拖动显示效果的，应该是可以显示在全屏幕之中的
  */
 public class StickyView extends View {
 

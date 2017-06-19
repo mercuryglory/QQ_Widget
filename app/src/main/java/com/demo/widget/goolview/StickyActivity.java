@@ -1,7 +1,6 @@
 package com.demo.widget.goolview;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -20,12 +19,10 @@ import java.util.List;
 
 public class StickyActivity extends AppCompatActivity {
 
-//    StickyTestView mStickyView;
-    ListView       mListView;
+    ListView mListView;
     private List<String> dataList;
     MyAdapter mAdapter;
 
-    int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,13 +36,11 @@ public class StickyActivity extends AppCompatActivity {
         }
         mListView.setAdapter(mAdapter);
 
-//        mStickyView = (StickyTestView) findViewById(R.id.sticky);
-//        mStickyView.setTextNumber("12");
 
     }
 
     public void restore(View view) {
-//        mStickyView.backToLayout();
+        //        mStickyView.backToLayout();
     }
 
     public class MyAdapter extends BaseAdapter {
@@ -71,48 +66,36 @@ public class StickyActivity extends AppCompatActivity {
         public View getView(final int position, View convertView, ViewGroup parent) {
 
             final ViewHolder holder;
-//            convertView = View.inflate(parent.getContext(), R.layout.item_list, null);
-//            holder = new ViewHolder();
-//            holder.mTextGooView = (PlaceView) convertView.findViewById(R.id.gootext);
             if (convertView == null) {
-                convertView = View.inflate(parent.getContext(), R.layout.item_list, null);
                 holder = new ViewHolder();
+                convertView = View.inflate(parent.getContext(), R.layout.item_list, null);
                 holder.mTextView = (TextView) convertView.findViewById(R.id.tv_number);
                 holder.mPlaceView = (PlaceView) convertView.findViewById(R.id.gootext);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            Log.e("adapter", position + "");
-            Log.e("remove", removePos.size() + "");
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
+            Log.e("adapter", position + "---" + removePos.size());
 
-                }
-            }, 100);
             convertView.measure(0, 0);
             int height = convertView.getMeasuredHeight();
 
+
+            PlaceView placeView = holder.mPlaceView;
+            //创建粘性控件,并将listview的条目高度值传递给它
+            StickyView view = placeView.createView(StickyActivity.this, height);
+            view.setOnDisappearListener(new StickyView.OnDisappearListener() {
+                @Override
+                public void onDisappear() {
+                    removePos.add(position);
+                }
+            });
             boolean isVisible = !removePos.contains(position);
             if (isVisible) {
                 holder.mPlaceView.setVisibility(View.VISIBLE);
             } else {
                 holder.mPlaceView.setVisibility(View.GONE);
             }
-            if (isVisible) {
-                final PlaceView placeView = holder.mPlaceView;
-                StickyView view = placeView.createView(StickyActivity.this, height);
-                view.setOnDisappearListener(new StickyView.OnDisappearListener() {
-                    @Override
-                    public void onDisappear() {
-                        removePos.add(position);
-                    }
-                });
-            }
-
-
             return convertView;
         }
 
