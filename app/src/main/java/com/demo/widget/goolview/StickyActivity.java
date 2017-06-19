@@ -3,6 +3,7 @@ package com.demo.widget.goolview;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -11,8 +12,10 @@ import android.widget.TextView;
 
 import com.demo.widget.R;
 import com.demo.widget.goolview.ui.PlaceView;
+import com.demo.widget.goolview.ui.StickyView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class StickyActivity extends AppCompatActivity {
@@ -46,6 +49,9 @@ public class StickyActivity extends AppCompatActivity {
     }
 
     public class MyAdapter extends BaseAdapter {
+
+        private HashSet<Integer> removePos = new HashSet<>();
+
         @Override
         public int getCount() {
             return dataList.size();
@@ -62,23 +68,23 @@ public class StickyActivity extends AppCompatActivity {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
 
             final ViewHolder holder;
-            convertView = View.inflate(parent.getContext(), R.layout.item_list, null);
-            holder = new ViewHolder();
-            holder.mTextGooView = (PlaceView) convertView.findViewById(R.id.gootext);
-//            if (convertView == null) {
-//                convertView = View.inflate(parent.getContext(), R.layout.item_list, null);
-//                holder = new ViewHolder();
-//                holder.mTextView = (TextView) convertView.findViewById(R.id.tv_number);
-//                holder.mTextGooView = (TextGooView) convertView.findViewById(R.id.gootext);
-//                convertView.setTag(holder);
-//
-//            } else {
-//                holder = (ViewHolder) convertView.getTag();
-//            }
-
+//            convertView = View.inflate(parent.getContext(), R.layout.item_list, null);
+//            holder = new ViewHolder();
+//            holder.mTextGooView = (PlaceView) convertView.findViewById(R.id.gootext);
+            if (convertView == null) {
+                convertView = View.inflate(parent.getContext(), R.layout.item_list, null);
+                holder = new ViewHolder();
+                holder.mTextView = (TextView) convertView.findViewById(R.id.tv_number);
+                holder.mPlaceView = (PlaceView) convertView.findViewById(R.id.gootext);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+            Log.e("adapter", position + "");
+            Log.e("remove", removePos.size() + "");
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -89,11 +95,23 @@ public class StickyActivity extends AppCompatActivity {
             convertView.measure(0, 0);
             int height = convertView.getMeasuredHeight();
 
-            final PlaceView gooView = holder.mTextGooView;
-            gooView.createView(StickyActivity.this, height);
+            boolean isVisible = !removePos.contains(position);
+            if (isVisible) {
+                holder.mPlaceView.setVisibility(View.VISIBLE);
+            } else {
+                holder.mPlaceView.setVisibility(View.GONE);
+            }
+            if (isVisible) {
+                final PlaceView placeView = holder.mPlaceView;
+                StickyView view = placeView.createView(StickyActivity.this, height);
+                view.setOnDisappearListener(new StickyView.OnDisappearListener() {
+                    @Override
+                    public void onDisappear() {
+                        removePos.add(position);
+                    }
+                });
+            }
 
-            String text = dataList.get(position);
-//            holder.mTextView.setText(text);
 
             return convertView;
         }
@@ -101,7 +119,7 @@ public class StickyActivity extends AppCompatActivity {
 
         class ViewHolder {
             TextView  mTextView;
-            PlaceView mTextGooView;
+            PlaceView mPlaceView;
         }
     }
 

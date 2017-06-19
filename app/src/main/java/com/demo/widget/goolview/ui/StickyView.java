@@ -13,14 +13,19 @@ import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.AnimationDrawable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
+import com.demo.widget.R;
 import com.demo.widget.goolview.util.GeometryUtil;
 import com.demo.widget.goolview.util.Utils;
 
@@ -270,10 +275,8 @@ public class StickyView extends View {
                 if (isOutOfRange) {
                     float d = GeometryUtil.getDistanceBetween2Points(mDragCenter, mStickCenter);
                     if (d > farestDistance) {
-                        Log.e("status", "真的超出了");
-                        isDisappear = true;
-                        mTextGooView.setStatus(PlaceView.Status.DISAPPEAR);
-                        removePoint();
+                        //超出范围，粘性控件消失并且伴随着一个气泡爆炸的动画
+                        disappear();
                     } else {
                         Log.e("status", "还好回去了");
                         // updateDragCenter(mStickCenter.x, mStickCenter.y);
@@ -318,6 +321,41 @@ public class StickyView extends View {
         return true;
     }
 
+    private void disappear() {
+        Log.e("status", "真的超出了");
+        isDisappear = true;
+        mTextGooView.setStatus(PlaceView.Status.DISAPPEAR);
+        removePoint();
+        //定义一个布局存放气泡动画图片
+        final BubbleLayout bubbleLayout = new BubbleLayout(mContext);
+        ImageView image = new ImageView(mContext);
+        image.setImageResource(R.drawable.anim_bubble);
+        bubbleLayout.setCenter(mDragCenter.x, mDragCenter.y - statusBarHeight);
+        //用Animation-list实现逐帧动画
+        AnimationDrawable animDrawable = (AnimationDrawable) image.getDrawable();
+        bubbleLayout.addView(image, new FrameLayout.LayoutParams(ViewGroup.LayoutParams
+                .WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mWindowManager.addView(bubbleLayout, mLayoutParams);
+        animDrawable.start();
+
+        int duration = 0;
+        for (int i = 0; i <= animDrawable.getNumberOfFrames(); i++) {
+            duration += animDrawable.getDuration(i);
+        }
+        postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (bubbleLayout.getParent() != null) {
+                    mWindowManager.removeViewImmediate(bubbleLayout);
+                }
+            }
+        }, duration);
+
+        if (mOnDisappearListener != null) {
+            mOnDisappearListener.onDisappear();
+        }
+    }
+
     private void updateDragCenter(float x, float y) {
         mDragCenter.set(x, y);
         invalidate();
@@ -341,10 +379,20 @@ public class StickyView extends View {
         windowManager.getDefaultDisplay().getMetrics(dm);
         int screenWidth1 = dm.widthPixels;
         int screenHeight1 = dm.heightPixels;
-
+        int a = getMeasuredWidth();
+        int b = getMeasuredHeight();
         statusBarHeight = Utils.getStatusBarHeight(this);
     }
 
+    public interface OnDisappearListener {
+        void onDisappear();
+    }
+
+    OnDisappearListener mOnDisappearListener;
+
+    public void setOnDisappearListener(OnDisappearListener onDisappearListener) {
+        mOnDisappearListener = onDisappearListener;
+    }
 
 }
 
