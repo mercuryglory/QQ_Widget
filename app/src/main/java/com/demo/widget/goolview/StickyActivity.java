@@ -86,9 +86,11 @@ public class StickyActivity extends AppCompatActivity {
 
                 }
             }, 100);
+            convertView.measure(0, 0);
+            int height = convertView.getMeasuredHeight();
 
             final PlaceView gooView = holder.mTextGooView;
-            gooView.createView(StickyActivity.this);
+            gooView.createView(StickyActivity.this, height);
 
             String text = dataList.get(position);
 //            holder.mTextView.setText(text);

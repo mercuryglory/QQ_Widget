@@ -13,7 +13,6 @@ import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -50,8 +49,6 @@ public class StickyView extends View {
 
     private float centerX;
     private float centerY;
-
-    private Handler handler = new Handler();
 
     public void setLayout(PlaceView textGooView) {
         mTextGooView = textGooView;

@@ -25,8 +25,7 @@ public class PlaceView extends TextView {
     float centerX;
     float centerY;
     float radius;
-
-    private Context mContext;
+    int itemHeight;
 
     public PlaceView(Context context) {
         this(context, null);
@@ -38,7 +37,6 @@ public class PlaceView extends TextView {
 
     public PlaceView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mContext = context;
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.RED);
 
@@ -119,11 +117,13 @@ public class PlaceView extends TextView {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         radius = this.getWidth() / 2;
-        int a = 2;
 
     }
 
-    public StickyView createView(Context context) {
+    public StickyView createView(Context context, int height) {
+        //得到listview条目的高度，重新计算布局
+        itemHeight = height;
+        requestLayout();
         stickyTestView = new StickyView(context);
         return stickyTestView;
     }
@@ -141,13 +141,15 @@ public class PlaceView extends TextView {
             width = widthSize;
         } else {
             textPaint.getTextBounds(this.getText().toString(), 0, this.getText().length(), bounds);
-            width = bounds.width() + 20 + getPaddingLeft() + getPaddingRight();
+//            width = bounds.width() + 50 + getPaddingLeft() + getPaddingRight();
+            width = itemHeight/3;
         }
         if (heightMode == MeasureSpec.EXACTLY) {
             height = heightSize;
         } else {
             textPaint.getTextBounds(this.getText().toString(), 0, this.getText().length(), bounds);
-            height = bounds.width() + 20 + getPaddingTop() + getPaddingBottom();
+//            height = bounds.width() + 50 + getPaddingTop() + getPaddingBottom();
+            height = itemHeight/3;
         }
         Log.e("measure", width + "-----" + height);
         setMeasuredDimension(width, height);
