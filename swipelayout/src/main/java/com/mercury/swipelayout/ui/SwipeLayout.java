@@ -78,6 +78,7 @@ public class SwipeLayout extends FrameLayout {
         //限定子view滑动到的边界（左端的x坐标）
         @Override
         public int clampViewPositionHorizontal(View child, int left, int dx) {
+            ViewGroup group = (ViewGroup) getParent();
             getParent().requestDisallowInterceptTouchEvent(true);
 
             //第二个参数left是当前滑动的view的左端滑动到的位置的x坐标

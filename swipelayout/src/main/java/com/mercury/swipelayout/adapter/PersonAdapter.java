@@ -10,6 +10,7 @@ import com.mercury.swipelayout.R;
 import com.mercury.swipelayout.ui.SwipeLayout;
 
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Mercury on 2016/8/12.
@@ -49,6 +50,7 @@ public class PersonAdapter extends BaseAdapter {
     }
 
     HashSet<SwipeLayout> openedItems = new HashSet<>();
+
     SwipeLayout.OnSwipeListener onSwipeListener = new SwipeLayout.OnSwipeListener() {
         @Override
         public void onClose(SwipeLayout layout) {
@@ -76,5 +78,8 @@ public class PersonAdapter extends BaseAdapter {
         openedItems.clear();
     }
 
+    public Set getOpened() {
+        return openedItems;
+    }
 
 }
