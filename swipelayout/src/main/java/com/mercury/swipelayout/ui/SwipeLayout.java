@@ -2,9 +2,11 @@ package com.mercury.swipelayout.ui;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,24 +14,27 @@ import android.widget.FrameLayout;
 
 /**
  * Created by Mercury on 2016/8/12.
+ * 侧滑删除的布局，可以放在listview或recyclerview中使用
  */
 public class SwipeLayout extends FrameLayout {
 
     private ViewDragHelper mDragHelper;
-    private ViewGroup      mBackLayout;       //后布局
     private ViewGroup      mFrontLayout;      //前布局
-    private int            mHeight;
-    private int            mWidth;
-    private int            mRange;         //拖拽范围,也是后布局的宽度
+    private ViewGroup      mBackLayout;       //后布局
+    private int            mWidth;      //该控件显示在屏幕内的宽度
+    private int            mHeight;     //该控件显示在屏幕内的高度
+    private int            mRange;      //拖拽范围,也就是后布局的宽度
 
     boolean isOpen = false;   //控件默认的状态(后布局是否显示),关闭
     private Status status = Status.Close;
+
     public enum Status {
         Open,
         Close,
-        Swiping;
+        Swiping
     }
 
+    //拖动行为中的状态监听
     OnSwipeListener mOnSwipeListener;
 
     public interface OnSwipeListener {
@@ -45,22 +50,22 @@ public class SwipeLayout extends FrameLayout {
     }
 
     public SwipeLayout(Context context) {
-        this(context,null);
+        this(context, null);
     }
 
     public SwipeLayout(Context context, AttributeSet attrs) {
-        this(context, attrs,0);
+        this(context, attrs, 0);
     }
 
     public SwipeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
         mDragHelper = ViewDragHelper.create(this, callback);
     }
 
     ViewDragHelper.Callback callback = new ViewDragHelper.Callback() {
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
+            //是否要捕捉滑动事件
             return true;
         }
 
@@ -71,13 +76,16 @@ public class SwipeLayout extends FrameLayout {
 
         @Override
         public int clampViewPositionHorizontal(View child, int left, int dx) {
+            //第二个参数left是当前滑动的view的左端滑动到的位置的x坐标
             if (child == mFrontLayout) {
+                //当前滑动发生在前布局，控制其拖拽范围
                 if (left < -mRange) {
                     left = -mRange;
                 } else if (left > 0) {
                     left = 0;
                 }
             } else if (child == mBackLayout) {
+                //当前滑动发生在后布局
                 if (left < mWidth - mRange) {
                     left = mWidth - mRange;
                 } else if (left > mWidth) {
@@ -97,6 +105,7 @@ public class SwipeLayout extends FrameLayout {
                 ViewCompat.offsetLeftAndRight(mFrontLayout, dx);
             }
 
+            //随着状态变化需要更新的
             dispatchChangeEvent();
         }
 
@@ -134,6 +143,7 @@ public class SwipeLayout extends FrameLayout {
 
     private Status updateStatus() {
         int left = mFrontLayout.getLeft();
+        Log.e("status", left + "");
         if (left == -mRange) {
             return Status.Open;
         } else if (left == 0) {
@@ -156,7 +166,6 @@ public class SwipeLayout extends FrameLayout {
                 ViewCompat.postInvalidateOnAnimation(this);
             }
         } else {
-
             isOpen = true;
             layoutContent(isOpen);
         }
@@ -190,6 +199,11 @@ public class SwipeLayout extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        int action = MotionEventCompat.getActionMasked(ev);
+        if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
+            mDragHelper.cancel();
+            return false;
+        }
         return mDragHelper.shouldInterceptTouchEvent(ev);
     }
 
@@ -203,11 +217,12 @@ public class SwipeLayout extends FrameLayout {
         return true;
     }
 
+    //渲染完毕后得到控件中的前布局和后布局，指定在布局中从上至下为前布局和侧滑出的后布局
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mBackLayout = (ViewGroup) getChildAt(0);
-        mFrontLayout = (ViewGroup) getChildAt(1);
+        mFrontLayout = (ViewGroup) getChildAt(0);
+        mBackLayout = (ViewGroup) getChildAt(1);
     }
 
     @Override
@@ -245,6 +260,7 @@ public class SwipeLayout extends FrameLayout {
         return new Rect(left, 0, left + mWidth, 0 + mHeight);
     }
 
+    //计算后布局矩形区域
     private Rect computeBackRect(Rect frontRect) {
         int left = frontRect.right;
         return new Rect(left, 0, left + mRange, 0 + mHeight);
@@ -254,8 +270,8 @@ public class SwipeLayout extends FrameLayout {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
-        mHeight = getMeasuredHeight();
         mWidth = getMeasuredWidth();
+        mHeight = getMeasuredHeight();
 
         mRange = mBackLayout.getMeasuredWidth();
     }
