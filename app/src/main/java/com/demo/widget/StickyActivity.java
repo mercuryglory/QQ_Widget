@@ -1,4 +1,4 @@
-package com.demo.widget.goolview;
+package com.demo.widget;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,7 +9,6 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.demo.widget.R;
 import com.demo.widget.goolview.ui.PlaceView;
 import com.demo.widget.goolview.ui.StickyView;
 
@@ -17,6 +16,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+/**
+ * Created by wang.zhonghao on 2017/6/21
+ * descript:  仅仅演示粘性控件的页面
+ */
 public class StickyActivity extends AppCompatActivity {
 
     ListView mListView;

@@ -22,10 +22,11 @@ import java.util.List;
 public class PersonAdapter extends BaseAdapter {
 
     List<String>     data      = new ArrayList<>();
-    HashSet<Integer> removePos = new HashSet<>();
+    HashSet<String> removePos = new HashSet<>();
 
     public void setData(List<String> list) {
-        data = list;
+        data.clear();
+        data.addAll(list);
     }
 
     @Override
@@ -92,10 +93,10 @@ public class PersonAdapter extends BaseAdapter {
         view.setOnDisappearListener(new StickyView.OnDisappearListener() {
             @Override
             public void onDisappear() {
-                removePos.add(position);
+                removePos.add(text);
             }
         });
-        boolean isVisible = !removePos.contains(position);
+        boolean isVisible = !removePos.contains(text);
         if (isVisible) {
             holder.mPlaceView.setVisibility(View.VISIBLE);
             holder.mPlaceView.setStatus(PlaceView.Status.NORMAL);

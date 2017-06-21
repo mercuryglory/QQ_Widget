@@ -15,8 +15,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter >
         </activity >
-        <activity android:name=".goolview.StickyActivity" />
-        <activity android:name=".parallex.ParallActivity" ></activity >
+        <activity android:name=".StickyActivity" />
+        <activity android:name=".ParallActivity" ></activity >
         <activity android:name=".MultipleActivity" />
     </application >
 

@@ -1,4 +1,4 @@
-package com.demo.widget.parallex.ui;
+package com.demo.widget.parallex;
 
 import android.animation.ValueAnimator;
 import android.content.Context;

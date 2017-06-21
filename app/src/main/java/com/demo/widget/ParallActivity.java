@@ -1,4 +1,4 @@
-package com.demo.widget.parallex;
+package com.demo.widget;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,12 +7,15 @@ import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
-import com.demo.widget.R;
-import com.demo.widget.parallex.ui.ParallaxListView;
+import com.demo.widget.parallex.ParallaxListView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+/**
+ * Created by wang.zhonghao on 2017/6/21
+ * descript:  演示视差特效列表的页面
+ */
 public class ParallActivity extends AppCompatActivity {
 
     @Bind(R.id.plv)
@@ -46,6 +49,7 @@ public class ParallActivity extends AppCompatActivity {
 //            }
 //        }, 50);
         mPlv.addHeaderView(headView);
-        mPlv.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,Cheeses.NAMES));
+        mPlv.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, Cheeses
+                .NAMES));
     }
 }

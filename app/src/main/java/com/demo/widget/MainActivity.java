@@ -5,9 +5,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.demo.widget.goolview.StickyActivity;
-import com.demo.widget.parallex.ParallActivity;
-
+/**
+ * Created by wang.zhonghao on 2017/6/21
+ * descript:  入口
+ */
 public class MainActivity extends AppCompatActivity {
 
     @Override

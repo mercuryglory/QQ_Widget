@@ -54,6 +54,8 @@ public class StickyView extends View {
 
     private float centerX;
     private float centerY;
+    int screenWidth;    //屏幕宽度
+    int screenHeight;   //屏幕高度
 
     public void setLayout(PlaceView textGooView) {
         mTextGooView = textGooView;
@@ -120,7 +122,7 @@ public class StickyView extends View {
 
     PointF[] mStickPoints;
 
-    PointF mControlPoint ;          //控制点
+    PointF mControlPoint ;            //控制点
     float  farestDistance = 100f;     //边界值，控制拖拽圆的拖拽范围
 
     @Override
@@ -234,11 +236,10 @@ public class StickyView extends View {
         mTextGooView.setStatus(PlaceView.Status.NORMAL);
     }
 
-    float x;
-    float y;
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        float x;
+        float y;
         if (isOutOfRange && isDisappear) {
             Log.e("status", "彻底消失");
             return true;
@@ -260,9 +261,14 @@ public class StickyView extends View {
                 //更新拖拽圆圆心的坐标
                 updateDragCenter(x, y);
                 Log.e("moveCenter", mStickCenter.x + "------" + mStickCenter.y);
+                Log.e("move", x + "------" + y);
 
                 float distance = GeometryUtil.getDistanceBetween2Points(mDragCenter, mStickCenter);
                 if (distance > farestDistance) {
+                    //如果在滑动过程中控件的坐标超过或达到了屏幕边界,也应该消失
+                    if (x <= 0 || x >= screenWidth || y <= 0 || y >= screenHeight) {
+                        disappear();
+                    }
                     isOutOfRange = true;
                     invalidate();
                 }
@@ -277,6 +283,7 @@ public class StickyView extends View {
                     if (d > farestDistance) {
                         //超出范围，粘性控件消失并且伴随着一个气泡爆炸的动画
                         disappear();
+                        return true;
                     } else {
                         Log.e("status", "还好回去了");
                         // updateDragCenter(mStickCenter.x, mStickCenter.y);
@@ -375,8 +382,8 @@ public class StickyView extends View {
         DisplayMetrics dm = new DisplayMetrics();
         WindowManager windowManager = (WindowManager) mContext.getSystemService(Context
                 .WINDOW_SERVICE);
-        int screenWidth = windowManager.getDefaultDisplay().getWidth();
-        int screenHeight = windowManager.getDefaultDisplay().getHeight();
+        screenWidth = windowManager.getDefaultDisplay().getWidth();
+        screenHeight = windowManager.getDefaultDisplay().getHeight();
         windowManager.getDefaultDisplay().getMetrics(dm);
         int screenWidth1 = dm.widthPixels;
         int screenHeight1 = dm.heightPixels;
