@@ -7,6 +7,9 @@ import android.widget.ListView;
 
 import com.mercury.swipelayout.adapter.PersonAdapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -22,6 +25,11 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         final PersonAdapter adapter = new PersonAdapter();
+        List<String> dataList = new ArrayList<>();
+        for (int i = 0; i < Cheeses.NAMES.length; i++) {
+            dataList.add(Cheeses.NAMES[i]);
+        }
+        adapter.setData(dataList);
         mLv.setAdapter(adapter);
 
         mLv.setOnScrollListener(new AbsListView.OnScrollListener() {

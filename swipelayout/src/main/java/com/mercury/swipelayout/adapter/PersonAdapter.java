@@ -5,34 +5,41 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.mercury.swipelayout.Cheeses;
 import com.mercury.swipelayout.R;
 import com.mercury.swipelayout.ui.SwipeLayout;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by Mercury on 2016/8/12.
  */
 public class PersonAdapter extends BaseAdapter {
+
+    List<String> data = new ArrayList<>();
+
+    public void setData(List<String> list) {
+        data = list;
+    }
+
     @Override
     public int getCount() {
-        return Cheeses.NAMES.length;
+        return data.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return data.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, final ViewGroup parent) {
         View view;
         if (convertView == null) {
             view = View.inflate(parent.getContext(), R.layout.item_list_swipe, null);
@@ -41,11 +48,31 @@ public class PersonAdapter extends BaseAdapter {
         }
 
         TextView tv_name = (TextView) view.findViewById(R.id.tv_name);
-        tv_name.setText(Cheeses.NAMES[position]);
+        final String text = data.get(position);
+        tv_name.setText(text);
 
         SwipeLayout sl = (SwipeLayout) view;
         sl.setOnSwipeListener(onSwipeListener);
 
+        TextView tvAtop = (TextView) view.findViewById(R.id.tv_atop);
+        TextView tvDelete = (TextView) view.findViewById(R.id.tv_delete);
+        tvAtop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                data.remove(text);
+                data.add(0, text);
+                notifyDataSetChanged();
+                closeAllItems();
+            }
+        });
+        tvDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                data.remove(text);
+                notifyDataSetChanged();
+                closeAllItems();
+            }
+        });
         return view;
     }
 
@@ -78,8 +105,5 @@ public class PersonAdapter extends BaseAdapter {
         openedItems.clear();
     }
 
-    public Set getOpened() {
-        return openedItems;
-    }
 
 }

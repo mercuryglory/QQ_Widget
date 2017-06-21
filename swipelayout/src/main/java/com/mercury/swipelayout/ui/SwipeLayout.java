@@ -50,6 +50,7 @@ public class SwipeLayout extends FrameLayout {
         mOnSwipeListener = onSwipeListener;
     }
 
+
     public SwipeLayout(Context context) {
         this(context, null);
     }

@@ -33,22 +33,26 @@
         android:orientation="horizontal" >
 
         <TextView
-            android:layout_width="60dp"
+            android:id="@+id/tv_atop"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="#666666"
             android:gravity="center"
-            android:text="call"
+            android:padding="10dp"
+            android:text="置顶"
             android:textColor="#fff"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
         <TextView
-            android:layout_width="60dp"
+            android:id="@+id/tv_delete"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="#f00"
             android:gravity="center"
-            android:text="delete"
+            android:padding="10dp"
+            android:text="删除"
             android:textColor="#fff"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
     </LinearLayout >
 
 
