@@ -80,8 +80,7 @@ public class SwipeLayout extends FrameLayout {
         //限定子view滑动到的边界（左端的x坐标）
         @Override
         public int clampViewPositionHorizontal(View child, int left, int dx) {
-            ViewGroup group = (ViewGroup) getParent();
-            getParent().requestDisallowInterceptTouchEvent(true);
+
 
             //第二个参数left是当前滑动的view的左端滑动到的位置的x坐标
             if (child == mFrontLayout) {
@@ -104,6 +103,7 @@ public class SwipeLayout extends FrameLayout {
 
         @Override
         public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
+
             if (changedView == mFrontLayout) {
                 //如果前布局位置发生变化,应该让后布局的位置也发生相应的变化，反之亦然
                 ViewCompat.offsetLeftAndRight(mBackLayout, dx);
@@ -126,7 +126,7 @@ public class SwipeLayout extends FrameLayout {
             } else {
                 close();
             }
-            getParent().requestDisallowInterceptTouchEvent(false);
+
         }
     };
 
@@ -139,14 +139,22 @@ public class SwipeLayout extends FrameLayout {
         if (lastStatus != status && mOnSwipeListener != null) {
             if (status == Status.Close) {
                 mOnSwipeListener.onClose(this);
+                getParent().requestDisallowInterceptTouchEvent(false);
+                return;
             } else if (status == Status.Open) {
                 mOnSwipeListener.onOpen(this);
+                getParent().requestDisallowInterceptTouchEvent(false);
+                return;
             } else {
                 if (lastStatus == Status.Close) {
                     //最新状态是滑动中,且上一个状态是关闭
                     mOnSwipeListener.onStartOpen(this);
+                    getParent().requestDisallowInterceptTouchEvent(true);
+                    return;
                 }
             }
+        } else {
+            getParent().requestDisallowInterceptTouchEvent(true);
         }
     }
 

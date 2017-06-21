@@ -42,7 +42,7 @@ public class StickyView extends View {
     private boolean isOutOfRange = false;       //是否超出范围
     private boolean isDisappear  = false;       //控件是否不可见
     private Paint textPaint;    //绘制文字的画笔
-    private String text = "1";  //控件内显示的文本
+    private String mText;       //控件内显示的文本
 
     private boolean DEBUG = false;
 
@@ -57,16 +57,17 @@ public class StickyView extends View {
     int screenWidth;    //屏幕宽度
     int screenHeight;   //屏幕高度
 
-    public void setLayout(PlaceView textGooView) {
+    public void setLayout(PlaceView textGooView, String text) {
         mTextGooView = textGooView;
+        this.mText = text;
         int[] points = new int[2];
         mTextGooView.getLocationInWindow(points);
         //根据占位红点的位置得到自身应该绘制的位置
         centerX = points[0] + mTextGooView.getWidth() / 2;
-        centerY= points[1] + mTextGooView.getHeight() / 2;
+        centerY = points[1] + mTextGooView.getHeight() / 2;
         Log.e("mercurytest", centerX + "-----" + centerY);
 
-        mDragCenter  = new PointF(centerX, centerY);        //拖拽圆圆心初始值（随手势变化）
+        mDragCenter = new PointF(centerX, centerY);        //拖拽圆圆心初始值（随手势变化）
         mStickCenter = new PointF(centerX, centerY);       //固定圆圆心
 
         mDragPoints = new PointF[]{        //拖拽圆的两个切点初始值
@@ -79,9 +80,10 @@ public class StickyView extends View {
                 new PointF(centerX, centerY)      //点4
         };
 
-        mControlPoint  = new PointF(centerX, centerY);
+        mControlPoint = new PointF(centerX, centerY);
         mDragRadius = mTextGooView.getWidth() / 2;
         mStickRadius = mTextGooView.getWidth() / 2;
+        farestDistance = mTextGooView.getWidth() * 3;
     }
 
 
@@ -106,7 +108,7 @@ public class StickyView extends View {
 
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setColor(Color.WHITE);
-        textPaint.setTextSize(15f);
+        textPaint.setTextSize(18f);
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
@@ -123,7 +125,7 @@ public class StickyView extends View {
     PointF[] mStickPoints;
 
     PointF mControlPoint ;            //控制点
-    float  farestDistance = 100f;     //边界值，控制拖拽圆的拖拽范围
+    float  farestDistance;           //边界值，控制拖拽圆的拖拽范围
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -218,13 +220,9 @@ public class StickyView extends View {
             //绘制拖拽圆
             canvas.drawCircle(mDragCenter.x, mDragCenter.y, mDragRadius, paint);
             //绘制拖拽圆中的文字
-            canvas.drawText(text, mDragCenter.x, mDragCenter.y + mDragRadius / 3.0f, textPaint);
+            canvas.drawText(mText, mDragCenter.x, mDragCenter.y + mDragRadius / 3.0f, textPaint);
         }
 
-    }
-
-    public void setTextNumber(String textNumber) {
-        text = textNumber;
     }
 
     public void backToLayout() {

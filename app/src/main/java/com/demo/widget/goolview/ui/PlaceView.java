@@ -27,6 +27,8 @@ public class PlaceView extends TextView {
     float radius;
     int itemHeight;
 
+    String text;
+
     public PlaceView(Context context) {
         this(context, null);
     }
@@ -42,7 +44,7 @@ public class PlaceView extends TextView {
 
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setColor(Color.WHITE);
-        textPaint.setTextSize(15f);
+        textPaint.setTextSize(18f);
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
@@ -64,14 +66,14 @@ public class PlaceView extends TextView {
                 textPaint.setColor(Color.WHITE);
                 Log.e("placeview", radius + "");
                 canvas.drawCircle(centerX, centerY, radius, paint);
-                canvas.drawText("1", centerX, centerY + radius / 3, textPaint);
+                canvas.drawText(text, centerX, centerY + radius / 4, textPaint);
                 break;
             case DISAPPEAR:
 //                this.setBackgroundColor(Color.TRANSPARENT);
                 paint.setColor(Color.TRANSPARENT);
                 textPaint.setColor(Color.TRANSPARENT);
                 canvas.drawCircle(centerX, centerY, radius, paint);
-                canvas.drawText("1", centerX, centerY + radius / 3, textPaint);
+                canvas.drawText(text, centerX, centerY + radius / 4, textPaint);
             default:
                 break;
 
@@ -84,13 +86,18 @@ public class PlaceView extends TextView {
         invalidate();
     }
 
+    public void setText(String text) {
+        this.text = text;
+        invalidate();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         getParent().requestDisallowInterceptTouchEvent(true);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 //将自身的位置参数传递给粘性控件
-                stickyTestView.setLayout(PlaceView.this);
+                stickyTestView.setLayout(PlaceView.this, text);
                 Log.e("mercury", "down");
                 break;
             case MotionEvent.ACTION_MOVE:

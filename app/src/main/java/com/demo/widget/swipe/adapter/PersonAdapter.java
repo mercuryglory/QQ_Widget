@@ -60,6 +60,7 @@ public class PersonAdapter extends BaseAdapter {
 
         final String text = data.get(position);
         holder.mTextView.setText(text);
+        holder.mPlaceView.setText(String.valueOf(position));
 
         SwipeLayout sl = (SwipeLayout) convertView;
         sl.setOnSwipeListener(onSwipeListener);

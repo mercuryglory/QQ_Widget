@@ -11,6 +11,7 @@ import android.widget.ListView;
 
 /**
  * Created by Mercury on 2016/8/12.
+ * 简单实现视差特效的列表
  */
 public class ParallaxListView extends ListView {
     private ImageView iv_image;
