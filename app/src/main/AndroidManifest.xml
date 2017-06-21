@@ -17,6 +17,7 @@
         </activity >
         <activity android:name=".goolview.StickyActivity" />
         <activity android:name=".parallex.ParallActivity" ></activity >
+        <activity android:name=".MultipleActivity" />
     </application >
 
 </manifest >

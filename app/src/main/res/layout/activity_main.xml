@@ -25,4 +25,13 @@
         android:text="粘性控件"
         android:onClick="stick"/>
 
+    <Button
+        android:layout_below="@id/btn_sticky"
+        android:layout_marginTop="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="模仿QQ"
+        android:onClick="condition"/>
+
 </RelativeLayout >

@@ -26,4 +26,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, StickyActivity.class);
         startActivity(intent);
     }
+
+    public void condition(View view) {
+        Intent intent = new Intent(this, MultipleActivity.class);
+        startActivity(intent);
+    }
 }
