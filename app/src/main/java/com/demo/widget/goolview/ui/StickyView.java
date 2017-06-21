@@ -324,6 +324,7 @@ public class StickyView extends View {
     private void disappear() {
         Log.e("status", "真的超出了");
         isDisappear = true;
+        //占位图片变为透明
         mTextGooView.setStatus(PlaceView.Status.DISAPPEAR);
         removePoint();
         //定义一个布局存放气泡动画图片

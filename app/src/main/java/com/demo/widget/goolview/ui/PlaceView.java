@@ -48,7 +48,7 @@ public class PlaceView extends TextView {
 
     }
 
-    enum Status {
+    public enum Status {
         NORMAL,DISAPPEAR
     }
 

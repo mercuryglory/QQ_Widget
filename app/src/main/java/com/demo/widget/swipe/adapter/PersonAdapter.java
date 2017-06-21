@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class PersonAdapter extends BaseAdapter {
 
-    List<String> data = new ArrayList<>();
+    List<String>     data      = new ArrayList<>();
     HashSet<Integer> removePos = new HashSet<>();
 
     public void setData(List<String> list) {
@@ -57,25 +57,6 @@ public class PersonAdapter extends BaseAdapter {
         }
         Log.e("adapter", position + "---" + removePos.size());
 
-        convertView.measure(0, 0);
-        int height = convertView.getMeasuredHeight();
-
-        PlaceView placeView = holder.mPlaceView;
-        //创建粘性控件,并将listview的条目高度值传递给它
-        StickyView view = placeView.createView(parent.getContext(), height);
-        view.setOnDisappearListener(new StickyView.OnDisappearListener() {
-            @Override
-            public void onDisappear() {
-                removePos.add(position);
-            }
-        });
-        boolean isVisible = !removePos.contains(position);
-        if (isVisible) {
-            holder.mPlaceView.setVisibility(View.VISIBLE);
-        } else {
-            holder.mPlaceView.setVisibility(View.GONE);
-        }
-
         final String text = data.get(position);
         holder.mTextView.setText(text);
 
@@ -101,11 +82,36 @@ public class PersonAdapter extends BaseAdapter {
                 closeAllItems();
             }
         });
+
+        convertView.measure(0, 0);
+        int height = convertView.getMeasuredHeight();
+
+        PlaceView placeView = holder.mPlaceView;
+        //创建粘性控件,并将listview的条目高度值传递给它
+        StickyView view = placeView.createView(parent.getContext(), height);
+        view.setOnDisappearListener(new StickyView.OnDisappearListener() {
+            @Override
+            public void onDisappear() {
+                removePos.add(position);
+            }
+        });
+        boolean isVisible = !removePos.contains(position);
+        if (isVisible) {
+            holder.mPlaceView.setVisibility(View.VISIBLE);
+            holder.mPlaceView.setStatus(PlaceView.Status.NORMAL);
+        } else {
+            holder.mPlaceView.setVisibility(View.GONE);
+        }
+
         return convertView;
     }
 
-    HashSet<SwipeLayout> openedItems = new HashSet<>();
+    class ViewHolder {
+        TextView  mTextView;
+        PlaceView mPlaceView;
+    }
 
+    HashSet<SwipeLayout> openedItems = new HashSet<>();
     SwipeLayout.OnSwipeListener onSwipeListener = new SwipeLayout.OnSwipeListener() {
         @Override
         public void onClose(SwipeLayout layout) {
@@ -133,9 +139,5 @@ public class PersonAdapter extends BaseAdapter {
         openedItems.clear();
     }
 
-        class ViewHolder {
-            TextView  mTextView;
-            PlaceView mPlaceView;
-        }
 
 }

@@ -152,7 +152,7 @@ public class SwipeLayout extends FrameLayout {
 
     private Status updateStatus() {
         int left = mFrontLayout.getLeft();
-        LogUtil.logE("status", left + "");
+        LogUtil.logE("swipe_status", left + "");
         if (left == -mRange) {
             return Status.Open;
         } else if (left == 0) {
