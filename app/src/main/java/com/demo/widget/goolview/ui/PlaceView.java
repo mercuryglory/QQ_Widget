@@ -6,17 +6,17 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.TextView;
 
 /**
  * 创建者:    wang.zhonghao
  * 创建时间:  2017/6/16
  * 描述:      固定的红点 在布局中使用，起占位的作用
  */
-public class PlaceView extends TextView {
+public class PlaceView extends AppCompatTextView {
 
     private StickyView stickyTestView;
     Paint paint;
@@ -27,7 +27,7 @@ public class PlaceView extends TextView {
     float radius;
     int itemHeight;
 
-    String text;
+    String text = "1";
 
     public PlaceView(Context context) {
         this(context, null);

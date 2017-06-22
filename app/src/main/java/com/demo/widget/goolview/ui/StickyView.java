@@ -14,6 +14,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -348,14 +349,18 @@ public class StickyView extends View {
         for (int i = 0; i <= animDrawable.getNumberOfFrames(); i++) {
             duration += animDrawable.getDuration(i);
         }
-        postDelayed(new Runnable() {
+        Log.e("wow", "duration");
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                Log.e("wow", "remove");
                 if (bubbleLayout.getParent() != null) {
                     mWindowManager.removeViewImmediate(bubbleLayout);
                 }
             }
         }, duration);
+        Log.e("wow", "end");
 
         if (mOnDisappearListener != null) {
             mOnDisappearListener.onDisappear();
