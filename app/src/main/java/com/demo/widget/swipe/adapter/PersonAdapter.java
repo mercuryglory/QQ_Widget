@@ -1,15 +1,16 @@
 package com.demo.widget.swipe.adapter;
 
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.demo.widget.R;
 import com.demo.widget.goolview.ui.PlaceView;
 import com.demo.widget.goolview.ui.StickyView;
+import com.demo.widget.swipe.ui.MyListView;
 import com.demo.widget.swipe.ui.SwipeLayout;
 
 import java.util.ArrayList;
@@ -57,11 +58,20 @@ public class PersonAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        final ListView listView = (ListView) parent;
-        if (openedItems.size() > 0) {
-            listView.requestDisallowInterceptTouchEvent(true);
-            Log.e("releaseListview", "我要这个事件");
-        }
+
+        final MyListView listView = (MyListView) parent;
+        listView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (openedItems.size() > 0) {
+                    Log.e("releaseListview", "我要这个事件");
+                    closeAllItems();
+                    listView.requestDisallowIntercept(false);
+                }
+                return false;
+            }
+        });
+
         Log.e("adapter", position + "---" + removePos.size());
 
         final String text = data.get(position);
@@ -80,6 +90,8 @@ public class PersonAdapter extends BaseAdapter {
             public void onOpen(SwipeLayout layout) {
                 Log.e("listener", "open");
                 openedItems.add(layout);
+                listView.requestDisallowIntercept(true);
+
             }
 
             @Override

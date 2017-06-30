@@ -6,12 +6,12 @@
     android:layout_height="match_parent"
     tools:context="com.demo.widget.MainActivity" >
 
-    <ListView
+    <com.demo.widget.swipe.ui.MyListView
         android:id="@+id/lv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible">
 
-    </ListView >
+    </com.demo.widget.swipe.ui.MyListView >
 
 </RelativeLayout >
