@@ -227,10 +227,8 @@ public class StickyView extends View {
     }
 
     public void backToLayout() {
-//        isDisappear = false;
         isOutOfRange = false;
         mDragCenter = new PointF(centerX, centerY);        //拖拽圆圆心初始值（随手势变化）
-//        mStickRadius = 10f;
         invalidate();
         mTextGooView.setStatus(PlaceView.Status.NORMAL);
     }

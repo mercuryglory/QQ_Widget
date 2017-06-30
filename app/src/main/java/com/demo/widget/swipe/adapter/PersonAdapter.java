@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.demo.widget.R;
@@ -56,14 +57,37 @@ public class PersonAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
+        final ListView listView = (ListView) parent;
+        if (openedItems.size() > 0) {
+            listView.requestDisallowInterceptTouchEvent(true);
+            Log.e("releaseListview", "我要这个事件");
+        }
         Log.e("adapter", position + "---" + removePos.size());
 
         final String text = data.get(position);
         holder.mTextView.setText(text);
         holder.mPlaceView.setText(String.valueOf(position));
 
-        SwipeLayout sl = (SwipeLayout) convertView;
-        sl.setOnSwipeListener(onSwipeListener);
+        final SwipeLayout sl = (SwipeLayout) convertView;
+        sl.setOnSwipeListener(new SwipeLayout.OnSwipeListener() {
+            @Override
+            public void onClose(SwipeLayout layout) {
+                Log.e("listener", "close");
+                openedItems.remove(layout);
+            }
+
+            @Override
+            public void onOpen(SwipeLayout layout) {
+                Log.e("listener", "open");
+                openedItems.add(layout);
+            }
+
+            @Override
+            public void onStartOpen(SwipeLayout layout) {
+                Log.e("listener", "startopen");
+                closeAllItems();
+            }
+        });
 
         TextView tvAtop = (TextView) convertView.findViewById(R.id.tv_atop);
         TextView tvDelete = (TextView) convertView.findViewById(R.id.tv_delete);
@@ -117,19 +141,19 @@ public class PersonAdapter extends BaseAdapter {
     SwipeLayout.OnSwipeListener onSwipeListener = new SwipeLayout.OnSwipeListener() {
         @Override
         public void onClose(SwipeLayout layout) {
-            System.out.println("onClose");
+            Log.e("listener", "close");
             openedItems.remove(layout);
         }
 
         @Override
         public void onOpen(SwipeLayout layout) {
-            System.out.println("onOpen");
+            Log.e("listener", "open");
             openedItems.add(layout);
         }
 
         @Override
         public void onStartOpen(SwipeLayout layout) {
-            System.out.println("onStartOpen");
+            Log.e("listener", "startopen");
             closeAllItems();
         }
     };
