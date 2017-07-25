@@ -15,7 +15,8 @@ import android.view.View;
 
 public class TriangleView extends View {
 
-    private Paint mPaint;
+    private Paint paint;
+    private Paint textPaint;
 
     public TriangleView(Context context) {
         this(context, null);
@@ -28,18 +29,23 @@ public class TriangleView extends View {
     public TriangleView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        mPaint = new Paint();
-        mPaint.setColor(Color.RED);
-        mPaint.setAntiAlias(true);
-        mPaint.setDither(true);
-        mPaint.setStyle(Paint.Style.FILL);
+        paint = new Paint();
+        paint.setColor(Color.RED);
+        paint.setAntiAlias(true);
+        paint.setStyle(Paint.Style.FILL);
+
+        textPaint = new Paint();
+        textPaint.setColor(Color.WHITE);
+        textPaint.setTextSize(16f);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         int status = getStatusBarHeight(getContext());
-        canvas.translate(0, -status);
+//        canvas.translate(0, -status);
         int[] points = new int[2];
         getLocationInWindow(points);
 
@@ -61,7 +67,8 @@ public class TriangleView extends View {
 //        path.lineTo(890, 400);
 //        path.lineTo(890, 490);
         path.close();
-        canvas.drawPath(path, mPaint);
+        canvas.drawPath(path, paint);
+//        canvas.drawText("文字",);
     }
 
     public int getStatusBarHeight(Context context) {
@@ -88,12 +95,12 @@ public class TriangleView extends View {
         if (widthMode == MeasureSpec.EXACTLY) {
             width = widthSize;
         } else if (widthMode == MeasureSpec.AT_MOST) {
-            width = 90;
+            width = 60;
         }
         if (heightMode == MeasureSpec.EXACTLY) {
             height = heightSize;
         } else if (heightMode == MeasureSpec.AT_MOST) {
-            height = 90;
+            height = 60;
         }
         setMeasuredDimension(width, height);
     }

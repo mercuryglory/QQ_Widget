@@ -16,8 +16,10 @@
             </intent-filter >
         </activity >
         <activity android:name=".StickyActivity" />
-        <activity android:name=".ParallActivity" ></activity >
+        <activity android:name=".ParallActivity" />
         <activity android:name=".MultipleActivity" />
+        <activity android:name=".TriAngViewActivity"
+            android:screenOrientation="portrait"/>
     </application >
 
 </manifest >
