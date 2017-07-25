@@ -36,8 +36,8 @@ public class TriangleView extends View {
 
         textPaint = new Paint();
         textPaint.setColor(Color.WHITE);
-        textPaint.setTextSize(16f);
-        textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setTextSize(24f);
+//        textPaint.setTextAlign(Paint.Align.CENTER);
 
     }
 
@@ -68,7 +68,7 @@ public class TriangleView extends View {
 //        path.lineTo(890, 490);
         path.close();
         canvas.drawPath(path, paint);
-//        canvas.drawText("文字",);
+        canvas.drawText("字", this.getWidth() / 2, this.getHeight() / 3, textPaint);
     }
 
     public int getStatusBarHeight(Context context) {
