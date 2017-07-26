@@ -17,6 +17,7 @@ public class TriangleView extends View {
 
     private Paint paint;
     private Paint textPaint;
+    private String text;
 
     public TriangleView(Context context) {
         this(context, null);
@@ -29,6 +30,7 @@ public class TriangleView extends View {
     public TriangleView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
+        text = "红";
         paint = new Paint();
         paint.setColor(Color.RED);
         paint.setAntiAlias(true);
@@ -44,7 +46,7 @@ public class TriangleView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        int status = getStatusBarHeight(getContext());
+//        int status = getStatusBarHeight(getContext());
 //        canvas.translate(0, -status);
         int[] points = new int[2];
         getLocationInWindow(points);
@@ -63,12 +65,9 @@ public class TriangleView extends View {
         path.moveTo(0, 0);
         path.lineTo(width, 0);
         path.lineTo(width, height);
-//        path.moveTo(800, 400);// 此点为多边形的起点
-//        path.lineTo(890, 400);
-//        path.lineTo(890, 490);
         path.close();
         canvas.drawPath(path, paint);
-        canvas.drawText("字", this.getWidth() / 2, this.getHeight() / 3, textPaint);
+        canvas.drawText(text, this.getWidth() / 2, this.getHeight() / 3, textPaint);
     }
 
     public int getStatusBarHeight(Context context) {
@@ -103,5 +102,17 @@ public class TriangleView extends View {
             height = 60;
         }
         setMeasuredDimension(width, height);
+    }
+
+    public void makeRed() {
+        text = "红";
+        paint.setColor(Color.RED);
+        invalidate();
+    }
+
+    public void makeYellow() {
+        text = "黄";
+        paint.setColor(Color.YELLOW);
+        invalidate();
     }
 }
